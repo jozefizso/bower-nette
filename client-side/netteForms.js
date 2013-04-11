@@ -128,7 +128,8 @@ Nette.validateRule = function(elem, op, arg) {
 		op = op.substr(1);
 	}
 	op = op.replace('::', '_');
-	op = op.replace('\\', '');
+	op = op.replace(/\\/g,'');
+	
 	return Nette.validators[op] ? Nette.validators[op](elem, arg, val) : null;
 };
 
@@ -169,11 +170,11 @@ Nette.validators = {
 	},
 
 	email: function(elem, arg, val) {
-		return (/^[^@\s]+@[^@\s]+\.[a-z\u00C0-\u02FF\u0370-\u1EFF]{2,10}$/i).test(val);
+		return (/^("([ !\x23-\x5B\x5D-\x7E]*|\\[ -~])+"|[-a-z0-9!#$%&'*+/=?^_`{|}~]+(\.[-a-z0-9!#$%&'*+/=?^_`{|}~]+)*)@([0-9a-z\u00C0-\u02FF\u0370-\u1EFF]([-0-9a-z\u00C0-\u02FF\u0370-\u1EFF]{0,61}[0-9a-z\u00C0-\u02FF\u0370-\u1EFF])?\.)+[a-z\u00C0-\u02FF\u0370-\u1EFF][-0-9a-z\u00C0-\u02FF\u0370-\u1EFF]{0,17}[a-z\u00C0-\u02FF\u0370-\u1EFF]$/i).test(val);
 	},
 
 	url: function(elem, arg, val) {
-		return (/^.+\.[a-z]{2,6}(\/.*)?$/i).test(val);
+		return (/^(https?:\/\/|(?=.*\.))([0-9a-z\u00C0-\u02FF\u0370-\u1EFF](([-0-9a-z\u00C0-\u02FF\u0370-\u1EFF]{0,61}[0-9a-z\u00C0-\u02FF\u0370-\u1EFF])?\.)*[a-z\u00C0-\u02FF\u0370-\u1EFF][-0-9a-z\u00C0-\u02FF\u0370-\u1EFF]{0,17}[a-z\u00C0-\u02FF\u0370-\u1EFF]|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d{1,5})?(\/\S*)?$/i).test(val);
 	},
 
 	regexp: function(elem, arg, val) {

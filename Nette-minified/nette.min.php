@@ -1,7 +1,7 @@
 <?php //netteloader=Nette\Framework
 
 namespace {/**
- * Nette Framework (version 2.0.4 released on 2012-07-30, http://nette.org)
+ * Nette Framework (version 2.0.5 released on 2012-08-30, http://nette.org)
  *
  * Copyright (c) 2004, 2012 David Grudl (http://davidgrudl.com)
  *
@@ -9,7 +9,7 @@ namespace {/**
  * the file license.txt that was distributed with this source code.
  */
 
-error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20004);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
+error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20005);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
 Nette;interface
 IBarPanel{function
 getTab();function
@@ -300,7 +300,7 @@ htmlDump(&$var,$level=0){static$tableUtf,$tableBin,$reBinary='#[^\x09\x0A\x0D\x2
 as$k=>&$v){if($k===$marker){continue;}$k=strtr($k,preg_match($reBinary,$k)||preg_last_error()?$tableBin:$tableUtf);$k=htmlSpecialChars(preg_match('#^\w+$#',$k)?$k:"\"$k\"");$s.="$space$space1<span class=\"php-key\">$k</span> => ".self::htmlDump($v,$level+1);}unset($var[$marker]);$s.="$space$brackets[1]</code>";}else{$s.="$brackets[0] ... $brackets[1]";}return$s."\n";}elseif(is_object($var)){if($var
 instanceof\Closure){$rc=new\ReflectionFunction($var);$arr=array();foreach($rc->getParameters()as$param){$arr[]='$'.$param->getName();}$arr=array('file'=>$rc->getFileName(),'line'=>$rc->getStartLine(),'parameters'=>implode(', ',$arr));}else{$arr=(array)$var;}$s='<span class="php-object">'.get_class($var)."</span>(".count($arr).") ";$space=str_repeat($space1='   ',$level);static$list=array();if(empty($arr)){}elseif(in_array($var,$list,TRUE)){$s.="{ *RECURSION* }";}elseif($level<Debugger::$maxDepth||!Debugger::$maxDepth||$var
 instanceof\Closure){$s.="<code>{\n";$list[]=$var;foreach($arr
-as$k=>&$v){$m='';if($k[0]==="\x00"){$m=' <span class="php-visibility">'.($k[1]==='*'?'protected':'private').'</span>';$k=substr($k,strrpos($k,"\x00")+1);}$k=strtr($k,preg_match($reBinary,$k)||preg_last_error()?$tableBin:$tableUtf);$k=htmlSpecialChars(preg_match('#^\w+$#',$k)?$k:"\"$k\"");$s.="$space$space1<span class=\"php-key\">$k</span>$m => ".self::htmlDump($v,$level+1);}array_pop($list);$s.="$space}</code>";}else{$s.="{ ... }";}return$s."\n";}elseif(is_resource($var)){return'<span class="php-resource">'.htmlSpecialChars(get_resource_type($var))." resource</span>\n";}else{return"<span>unknown type</span>\n";}}static
+as$k=>&$v){$m='';if($k[0]==="\x00"){$m=' <span class="php-visibility">'.($k[1]==='*'?'protected':'private').'</span>';$k=substr($k,strrpos($k,"\x00")+1);}$k=strtr($k,preg_match($reBinary,$k)||preg_last_error()?$tableBin:$tableUtf);$k=htmlSpecialChars(preg_match('#^\w+$#',$k)?$k:"\"$k\"");$s.="$space$space1<span class=\"php-key\">$k</span>$m => ".self::htmlDump($v,$level+1);}array_pop($list);$s.="$space}</code>";}else{$s.="{ ... }";}return$s."\n";}elseif(is_resource($var)){$type=get_resource_type($var);$s='<span class="php-resource">'.htmlSpecialChars($type)." resource</span> ";static$info=array('stream'=>'stream_get_meta_data','curl'=>'curl_getinfo');if(isset($info[$type])){$space=str_repeat($space1='   ',$level);$s.="<code>{\n";foreach(call_user_func($info[$type],$var)as$k=>$v){$s.=$space.$space1.'<span class="php-key">'.htmlSpecialChars($k)."</span> => ".self::htmlDump($v,$level+1);}$s.="$space}</code>";}return$s."\n";}else{return"<span>unknown type</span>\n";}}static
 function
 clickableDump($dump,$collapsed=FALSE){return'<pre class="nette-dump">'.preg_replace_callback('#^( *)((?>[^(\r\n]{1,200}))\((\d+)\) <code>#m',function($m)use($collapsed){return"$m[1]<a href='#' rel='next'>$m[2]($m[3]) ".(($m[1]||!$collapsed)&&($m[3]<7)?'<abbr>&#x25bc;</abbr> </a><code>':'<abbr>&#x25ba;</abbr> </a><code class="nette-collapsed">');},self::htmlDump($dump)).'</pre>';}static
 function
@@ -524,9 +524,9 @@ DEBUG='debug',INFO='info',WARNING='warning',ERROR='error',CRITICAL='critical';pu
 static$emailSnooze=172800;public$mailer=array(__CLASS__,'defaultMailer');public$directory;public$email;function
 log($message,$priority=self::INFO){if(!is_dir($this->directory)){throw
 new
-Nette\DirectoryNotFoundException("Directory '$this->directory' is not found or is not directory.");}if(is_array($message)){$message=implode(' ',$message);}$res=error_log(trim($message).PHP_EOL,3,$this->directory.'/'.strtolower($priority).'.log');if(($priority===self::ERROR||$priority===self::CRITICAL)&&$this->email&&$this->mailer&&@filemtime($this->directory.'/email-sent')+self::$emailSnooze<time()&&@file_put_contents($this->directory.'/email-sent','sent')){callback($this->mailer)->invoke($message,$this->email);}return$res;}static
+Nette\DirectoryNotFoundException("Directory '$this->directory' is not found or is not directory.");}if(is_array($message)){$message=implode(' ',$message);}$res=error_log(trim($message).PHP_EOL,3,$this->directory.'/'.strtolower($priority).'.log');if(($priority===self::ERROR||$priority===self::CRITICAL)&&$this->email&&$this->mailer&&@filemtime($this->directory.'/email-sent')+self::$emailSnooze<time()&&@file_put_contents($this->directory.'/email-sent','sent')){Nette\Callback::create($this->mailer)->invoke($message,$this->email);}return$res;}static
 function
-defaultMailer($message,$email){$host='';foreach(array('HTTP_HOST','SERVER_NAME','HOSTNAME')as$item){if(isset($_SERVER[$item])){$host=$_SERVER[$item];break;}}$parts=str_replace(array("\r\n","\n"),array("\n",PHP_EOL),array('headers'=>"From: noreply@$host\nX-Mailer: Nette Framework\n",'subject'=>"PHP: An error occurred on the server $host",'body'=>"[".@date('Y-m-d H:i:s')."] $message"));mail($email,$parts['subject'],$parts['body'],$parts['headers']);}}class
+defaultMailer($message,$email){$host=php_uname('n');foreach(array('HTTP_HOST','SERVER_NAME','HOSTNAME')as$item){if(isset($_SERVER[$item])){$host=$_SERVER[$item];break;}}$parts=str_replace(array("\r\n","\n"),array("\n",PHP_EOL),array('headers'=>implode("\n",array("From: noreply@$host",'X-Mailer: Nette Framework','Content-Type: text/plain; charset=UTF-8','Content-Transfer-Encoding: 8bit'))."\n",'subject'=>"PHP: An error occurred on the server $host",'body'=>"[".@date('Y-m-d H:i:s')."] $message"));mail($email,$parts['subject'],$parts['body'],$parts['headers']);}}class
 FireLogger
 extends
 Nette\Object{const
@@ -1170,7 +1170,7 @@ htmlSpecialChars($this->request->getPresenterName().':'.(isset($this->request->p
 return
 ob_get_clean();}function
 getPanel(){ob_start();?>
-<style>#nette-debug .nette-RoutingPanel table{font:9pt/1.5 Consolas,monospace}#nette-debug .nette-RoutingPanel .yes td{color:green}#nette-debug .nette-RoutingPanel .may td{color:#67F}#nette-debug .nette-RoutingPanel pre,#nette-debug .nette-RoutingPanel code{display:inline}</style>
+<style>#nette-debug .nette-RoutingPanel table{font:9pt/1.5 Consolas,monospace}#nette-debug .nette-RoutingPanel .yes td{color:green}#nette-debug .nette-RoutingPanel .may td{color:#67F}#nette-debug .nette-RoutingPanel pre,#nette-debug .nette-RoutingPanel code{display:inline}#nette-debug .nette-RoutingPanel code .nette-collapsed{display:none}</style>
 
 <div class="nette-RoutingPanel">
 <h1>
@@ -1247,7 +1247,7 @@ htmlSpecialChars($router['mask'])?></strong></code></td>
 		<td><code>
 		<?php foreach($router['defaults']as$key=>$value):?>
 			<?php echo
-htmlSpecialChars($key),"&nbsp;=&nbsp;",is_string($value)?htmlSpecialChars($value):str_replace("\n</pre",'</pre',Debugger::dump($value,TRUE))?><br />
+htmlSpecialChars($key),"&nbsp;=&nbsp;",is_string($value)?htmlSpecialChars($value):str_replace("\n</pre",'</pre',Nette\Diagnostics\Helpers::clickableDump($value,TRUE))?><br />
 		<?php endforeach?>
 		</code></td>
 
@@ -1262,7 +1262,7 @@ htmlSpecialChars($router['request']->getPresenterName().':'.(isset($params[Prese
 		<?php foreach($params
 as$key=>$value):?>
 			<?php echo
-htmlSpecialChars($key),"&nbsp;=&nbsp;",is_string($value)?htmlSpecialChars($value):str_replace("\n</pre",'</pre',Debugger::dump($value,TRUE))?><br />
+htmlSpecialChars($key),"&nbsp;=&nbsp;",is_string($value)?htmlSpecialChars($value):str_replace("\n</pre",'</pre',Nette\Diagnostics\Helpers::clickableDump($value,TRUE))?><br />
 		<?php endforeach?>
 		</code><?php endif?></td>
 	</tr>
@@ -1313,7 +1313,8 @@ function
 getContext(){return$this->context;}function
 run(Application\Request$request){$this->request=$request;$httpRequest=$this->context->getByType('Nette\Http\IRequest');if(!$httpRequest->isAjax()&&($request->isMethod('get')||$request->isMethod('head'))){$refUrl=clone$httpRequest->getUrl();$url=$this->context->router->constructUrl($request,$refUrl->setPath($refUrl->getScriptPath()));if($url!==NULL&&!$httpRequest->getUrl()->isEqual($url)){return
 new
-Responses\RedirectResponse($url,Http\IResponse::S301_MOVED_PERMANENTLY);}}$params=$request->getParameters();if(!isset($params['callback'])){return;}$params['presenter']=$this;$callback=callback($params['callback']);$response=$callback->invokeArgs(Application\UI\PresenterComponentReflection::combineArgs($callback->toReflection(),$params));if(is_string($response)){$response=array($response,array());}if(is_array($response)){if($response[0]instanceof\SplFileInfo){$response=$this->createTemplate('Nette\Templating\FileTemplate')->setParameters($response[1])->setFile($response[0]);}else{$response=$this->createTemplate('Nette\Templating\Template')->setParameters($response[1])->setSource($response[0]);}}if($response
+Responses\RedirectResponse($url,Http\IResponse::S301_MOVED_PERMANENTLY);}}$params=$request->getParameters();if(!isset($params['callback'])){return;}$params['presenter']=$this;$callback=new
+Nette\Callback($params['callback']);$response=$callback->invokeArgs(Application\UI\PresenterComponentReflection::combineArgs($callback->toReflection(),$params));if(is_string($response)){$response=array($response,array());}if(is_array($response)){if($response[0]instanceof\SplFileInfo){$response=$this->createTemplate('Nette\Templating\FileTemplate')->setParameters($response[1])->setFile($response[0]);}else{$response=$this->createTemplate('Nette\Templating\Template')->setParameters($response[1])->setSource($response[0]);}}if($response
 instanceof
 Nette\Templating\ITemplate){return
 new
@@ -1333,7 +1334,9 @@ PresenterFactory
 implements
 IPresenterFactory{public$caseSensitive=FALSE;private$baseDir;private$cache=array();private$container;function
 __construct($baseDir,Nette\DI\Container$container){$this->baseDir=$baseDir;$this->container=$container;}function
-createPresenter($name){$presenter=$this->container->createInstance($this->getPresenterClass($name));if(method_exists($presenter,'setContext')){$this->container->callMethod(array($presenter,'setContext'));}return$presenter;}function
+createPresenter($name){$presenter=$this->container->createInstance($this->getPresenterClass($name));if(method_exists($presenter,'setContext')){$this->container->callMethod(array($presenter,'setContext'));}foreach(array_reverse(get_class_methods($presenter))as$method){if(substr($method,0,6)==='inject'){$this->container->callMethod(array($presenter,$method));}}if($presenter
+instanceof
+UI\Presenter&&$presenter->invalidLinkMode===NULL){$presenter->invalidLinkMode=$this->container->parameters['debugMode']?UI\Presenter::INVALID_LINK_WARNING:UI\Presenter::INVALID_LINK_SILENT;}return$presenter;}function
 getPresenterClass(&$name){if(isset($this->cache[$name])){list($class,$name)=$this->cache[$name];return$class;}if(!is_string($name)||!Nette\Utils\Strings::match($name,"#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*$#")){throw
 new
 InvalidPresenterException("Presenter name must be alphanumeric string, '$name' is invalid.");}$class=$this->formatPresenterClass($name);if(!class_exists($class)){$file=$this->formatPresenterFile($name);if(is_file($file)&&is_readable($file)){Nette\Utils\LimitedScope::load($file,TRUE);}if(!class_exists($class)){throw
@@ -1408,8 +1411,7 @@ function
 getName(){return$this->name;}final
 function
 getContentType(){return$this->contentType;}function
-send(Nette\Http\IRequest$httpRequest,Nette\Http\IResponse$httpResponse){$httpResponse->setContentType($this->contentType);$httpResponse->setHeader('Content-Disposition','attachment; filename="'.$this->name.'"');$filesize=$length=filesize($this->file);$handle=fopen($this->file,'r');if($this->resuming){$httpResponse->setHeader('Accept-Ranges','bytes');$range=$httpRequest->getHeader('Range');if($range!==NULL){$range=substr($range,6);list($start,$end)=explode('-',$range);if($start==NULL){$start=0;}if($end==NULL){$end=$filesize-1;}if($start<0||$end<=$start||$end>$filesize-1){$httpResponse->setCode(416);return;}$httpResponse->setCode(206);$httpResponse->setHeader('Content-Range','bytes '.$start.'-'.$end.'/'.$filesize);$length=$end-$start+1;fseek($handle,$start);}else{$httpResponse->setHeader('Content-Range','bytes 0-'.($filesize-1).'/'.$filesize);}}$httpResponse->setHeader('Content-Length',$length);while(!feof($handle)){echo
-fread($handle,4e6);}fclose($handle);}}class
+send(Nette\Http\IRequest$httpRequest,Nette\Http\IResponse$httpResponse){$httpResponse->setContentType($this->contentType);$httpResponse->setHeader('Content-Disposition','attachment; filename="'.$this->name.'"');$filesize=$length=filesize($this->file);$handle=fopen($this->file,'r');if($this->resuming){$httpResponse->setHeader('Accept-Ranges','bytes');if(preg_match('#^bytes=(\d*)-(\d*)$#',$httpRequest->getHeader('Range'),$matches)){list(,$start,$end)=$matches;if($start===''){$start=max(0,$filesize-$end);$end=$filesize-1;}elseif($end===''||$end>$filesize-1){$end=$filesize-1;}if($end<=$start){$httpResponse->setCode(416);return;}$httpResponse->setCode(206);$httpResponse->setHeader('Content-Range','bytes '.$start.'-'.$end.'/'.$filesize);$length=$end-$start+1;fseek($handle,$start);}else{$httpResponse->setHeader('Content-Range','bytes 0-'.($filesize-1).'/'.$filesize);}}$httpResponse->setHeader('Content-Length',$length);while(!feof($handle)&&$length>0){echo$s=fread($handle,min(4e6,$length));$length-=strlen($s);}fclose($handle);}}class
 ForwardResponse
 extends
 Nette\Object
@@ -1809,7 +1811,7 @@ new
 Nette\UnexpectedValueException("Object returned by $class::createTemplate() must be instance of Nette\\Templating\\ITemplate, '$class2' given.");}$this->template=$value;}return$this->template;}protected
 function
 createTemplate($class=NULL){$template=$class?new$class:new
-Nette\Templating\FileTemplate;$presenter=$this->getPresenter(FALSE);$template->onPrepareFilters[]=callback($this,'templatePrepareFilters');$template->registerHelperLoader('Nette\Templating\Helpers::loader');$template->control=$template->_control=$this;$template->presenter=$template->_presenter=$presenter;if($presenter
+Nette\Templating\FileTemplate;$presenter=$this->getPresenter(FALSE);$template->onPrepareFilters[]=$this->templatePrepareFilters;$template->registerHelperLoader('Nette\Templating\Helpers::loader');$template->control=$template->_control=$this;$template->presenter=$template->_presenter=$presenter;if($presenter
 instanceof
 Presenter){$template->setCacheStorage($presenter->getContext()->nette->templateCacheStorage);$template->user=$presenter->getUser();$template->netteHttpResponse=$presenter->getHttpResponse();$template->netteCacheStorage=$presenter->getContext()->getByType('Nette\Caching\IStorage');$template->baseUri=$template->baseUrl=rtrim($presenter->getHttpRequest()->getUrl()->getBaseUrl(),'/');$template->basePath=preg_replace('#https?://[^/]+#A','',$template->baseUrl);if($presenter->hasFlashSession()){$id=$this->getParameterId('flash');$template->flashes=$presenter->getFlashSession()->$id;}}if(!isset($template->flashes)||!is_array($template->flashes)){$template->flashes=array();}return$template;}function
 templatePrepareFilters($template){$template->registerFilter($this->getPresenter()->getContext()->nette->createLatte());}function
@@ -2010,7 +2012,8 @@ __toString(){try{return$this->component->link($this->destination,$this->params);
 Multiplier
 extends
 PresenterComponent{private$factory;function
-__construct($factory){parent::__construct();$this->factory=callback($factory);}protected
+__construct($factory){parent::__construct();$this->factory=new
+Nette\Callback($factory);}protected
 function
 createComponent($name){return$this->factory->invoke($name,$this);}}use
 Nette\Application;use
@@ -2025,7 +2028,7 @@ implements
 Application\IPresenter{const
 INVALID_LINK_SILENT=1,INVALID_LINK_WARNING=2,INVALID_LINK_EXCEPTION=3;const
 SIGNAL_KEY='do',ACTION_KEY='action',FLASH_KEY='_fid',DEFAULT_ACTION='default';public$invalidLinkMode;public$onShutdown;private$request;private$response;public$autoCanonicalize=TRUE;public$absoluteUrls=FALSE;private$globalParams;private$globalState;private$globalStateSinces;private$action;private$view;private$layout;private$payload;private$signalReceiver;private$signal;private$ajaxMode;private$startupCheck;private$lastCreatedRequest;private$lastCreatedRequestFlag;private$context;function
-__construct(Nette\DI\Container$context){$this->context=$context;if($this->invalidLinkMode===NULL){$this->invalidLinkMode=$context->parameters['productionMode']?self::INVALID_LINK_SILENT:self::INVALID_LINK_WARNING;}}final
+__construct(Nette\DI\Container$context=NULL){$this->context=$context;if($context&&$this->invalidLinkMode===NULL){$this->invalidLinkMode=$context->parameters['productionMode']?self::INVALID_LINK_SILENT:self::INVALID_LINK_WARNING;}}final
 function
 getRequest(){return$this->request;}final
 function
@@ -2177,6 +2180,8 @@ array();}}function
 hasFlashSession(){return!empty($this->params[self::FLASH_KEY])&&$this->getSession()->hasSection('Nette.Application.Flash/'.$this->params[self::FLASH_KEY]);}function
 getFlashSession(){if(empty($this->params[self::FLASH_KEY])){$this->params[self::FLASH_KEY]=Nette\Utils\Strings::random(4);}return$this->getSession('Nette.Application.Flash/'.$this->params[self::FLASH_KEY]);}final
 function
+injectPrimary(Nette\DI\Container$context){$this->context=$context;}final
+function
 getContext(){return$this->context;}final
 function
 getService($name){return$this->context->getService($name);}protected
@@ -2201,7 +2206,8 @@ static($class);}function
 __toString(){return'Class '.$this->getName();}function
 hasEventProperty($name){if(preg_match('#^on[A-Z]#',$name)&&$this->hasProperty($name)){$rp=$this->getProperty($name);return$rp->isPublic()&&!$rp->isStatic();}return
 FALSE;}function
-setExtensionMethod($name,$callback){$l=&self::$extMethods[strtolower($name)];$l[strtolower($this->getName())]=callback($callback);$l['']=NULL;return$this;}function
+setExtensionMethod($name,$callback){$l=&self::$extMethods[strtolower($name)];$l[strtolower($this->getName())]=new
+Nette\Callback($callback);$l['']=NULL;return$this;}function
 getExtensionMethod($name){$class=strtolower($this->getName());$l=&self::$extMethods[strtolower($name)];if(empty($l)){return
 FALSE;}elseif(isset($l[''][$class])){return$l[''][$class];}$cl=$class;do{if(isset($l[$cl])){return$l[''][$class]=$l[$cl];}}while(($cl=strtolower(get_parent_class($cl)))!=='');foreach(class_implements($class)as$cl){$cl=strtolower($cl);if(isset($l[$cl])){return$l[''][$class]=$l[$cl];}}return$l[''][$class]=FALSE;}function
 is($type){return$this->isSubclassOf($type)||strcasecmp($this->getName(),ltrim($type,'\\'))===0;}function
@@ -2274,19 +2280,20 @@ getStorage(){return$this->storage;}function
 getNamespace(){return(string)substr($this->namespace,0,-1);}function
 derive($namespace){$derived=new
 static($this->storage,$this->namespace.$namespace);return$derived;}function
-load($key,$fallback=NULL){$data=$this->storage->read($this->generateKey($key));if($data===NULL&&$fallback){return$this->save($key,callback($fallback));}return$data;}function
+load($key,$fallback=NULL){$data=$this->storage->read($this->generateKey($key));if($data===NULL&&$fallback){return$this->save($key,new
+Nette\Callback($fallback));}return$data;}function
 save($key,$data,array$dp=NULL){$this->release();$key=$this->generateKey($key);if($data
 instanceof
 Nette\Callback||$data
-instanceof\Closure){$this->storage->lock($key);$data=callback($data)->invokeArgs(array(&$dp));}if($data===NULL){$this->storage->remove($key);}else{$this->storage->write($key,$data,$this->completeDependencies($dp,$data));return$data;}}private
+instanceof\Closure){$this->storage->lock($key);$data=Nette\Callback::create($data)->invokeArgs(array(&$dp));}if($data===NULL){$this->storage->remove($key);}else{$this->storage->write($key,$data,$this->completeDependencies($dp,$data));return$data;}}private
 function
 completeDependencies($dp,$data){if(is_object($data)){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkSerializationVersion'),get_class($data),Nette\Reflection\ClassType::from($data)->getAnnotation('serializationVersion'));}if(isset($dp[Cache::EXPIRATION])){$dp[Cache::EXPIRATION]=Nette\DateTime::from($dp[Cache::EXPIRATION])->format('U')-time();}if(isset($dp[self::FILES])){foreach(array_unique((array)$dp[self::FILES])as$item){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkFile'),$item,@filemtime($item));}unset($dp[self::FILES]);}if(isset($dp[self::ITEMS])){$dp[self::ITEMS]=array_unique((array)$dp[self::ITEMS]);foreach($dp[self::ITEMS]as$k=>$item){$dp[self::ITEMS][$k]=$this->generateKey($item);}}if(isset($dp[self::CONSTS])){foreach(array_unique((array)$dp[self::CONSTS])as$item){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkConst'),$item,constant($item));}unset($dp[self::CONSTS]);}if(!is_array($dp)){$dp=array();}return$dp;}function
 remove($key){$this->save($key,NULL);}function
 clean(array$conds=NULL){$this->release();$this->storage->clean((array)$conds);}function
 call($function){$key=func_get_args();return$this->load($key,function()use($function,$key){array_shift($key);return
-callback($function)->invokeArgs($key);});}function
+Nette\Callback::create($function)->invokeArgs($key);});}function
 wrap($function,array$dp=NULL){$cache=$this;return
-function()use($cache,$function,$dp){$key=array($function,func_get_args());$data=$cache->load($key);if($data===NULL){$data=$cache->save($key,callback($function)->invokeArgs($key[1]),$dp);}return$data;};}function
+function()use($cache,$function,$dp){$key=array($function,func_get_args());$data=$cache->load($key);if($data===NULL){$data=$cache->save($key,Nette\Callback::create($function)->invokeArgs($key[1]),$dp);}return$data;};}function
 start($key){$data=$this->load($key);if($data===NULL){return
 new
 OutputHelper($this,$key);}echo$data;}protected
@@ -2577,8 +2584,14 @@ offsetUnset($key){unset($this->$key);}}final
 class
 Callback
 extends
-Object{private$cb;function
-__construct($cb,$m=NULL){if($m!==NULL){$cb=array($cb,$m);}if(!is_callable($cb,TRUE)){throw
+Object{private$cb;static
+function
+create($callback,$m=NULL){return
+new
+self($callback,$m);}function
+__construct($cb,$m=NULL){if($m!==NULL){$cb=array($cb,$m);}elseif($cb
+instanceof
+self){$this->cb=$cb->cb;return;}if(!is_callable($cb,TRUE)){throw
 new
 InvalidArgumentException("Invalid callback.");}$this->cb=$cb;}function
 __invoke(){if(!is_callable($this->cb)){throw
@@ -2710,7 +2723,7 @@ getConfig($key=NULL,$default=NULL){$params=Nette\ArrayHash::from(self::getContex
 isset($params[$key])?$params[$key]:$default;}else{return$params;}}}final
 class
 Framework{const
-NAME='Nette Framework',VERSION='2.0.4',REVISION='2f3808e released on 2012-07-30';public
+NAME='Nette Framework',VERSION='2.0.5',REVISION='f8aa369 released on 2012-08-30';public
 static$iAmUsingBadHost=FALSE;final
 function
 __construct(){throw
@@ -2810,49 +2823,49 @@ UnknownImageFileException
 extends\Exception{}final
 class
 ObjectMixin{private
-static$methods;final
+static$methods;private
+static$props;final
 function
 __construct(){throw
 new
 StaticClassException;}static
 function
-call($_this,$name,$args){$class=new
-Reflection\ClassType($_this);if($name===''){throw
+call($_this,$name,$args){$class=get_class($_this);$isProp=self::hasProperty($class,$name);if($name===''){throw
 new
-MemberAccessException("Call to class '$class->name' method without name.");}if($class->hasEventProperty($name)){if(is_array($list=$_this->$name)||$list
-instanceof\Traversable){foreach($list
-as$handler){callback($handler)->invokeArgs($args);}}elseif($list!==NULL){throw
+MemberAccessException("Call to class '$class' method without name.");}elseif($isProp==='event'){if(is_array($_this->$name)||$_this->$name
+instanceof\Traversable){foreach($_this->$name
+as$handler){Nette\Callback::create($handler)->invokeArgs($args);}}elseif($_this->$name!==NULL){throw
 new
-UnexpectedValueException("Property $class->name::$$name must be array or NULL, ".gettype($list)." given.");}return
-NULL;}if($cb=$class->getExtensionMethod($name)){array_unshift($args,$_this);return$cb->invokeArgs($args);}throw
+UnexpectedValueException("Property $class::$$name must be array or NULL, ".gettype($_this->$name)." given.");}}elseif($cb=Reflection\ClassType::from($_this)->getExtensionMethod($name)){array_unshift($args,$_this);return$cb->invokeArgs($args);}else{throw
 new
-MemberAccessException("Call to undefined method $class->name::$name().");}static
+MemberAccessException("Call to undefined method $class::$name().");}}static
 function
-callProperty($_this,$name,$args){if(strlen($name)>3){$op=substr($name,0,3);$prop=strtolower($name[3]).substr($name,4);if($op==='add'&&property_exists($_this,$prop.'s')){$_this->{$prop.'s'}[]=$args[0];return$_this;}elseif($op==='set'&&property_exists($_this,$prop)){$_this->$prop=$args[0];return$_this;}elseif($op==='get'&&property_exists($_this,$prop)){return$_this->$prop;}}self::call($_this,$name,$args);}static
+callProperty($_this,$name,$args){if(strlen($name)>3){$op=substr($name,0,3);$prop=strtolower($name[3]).substr($name,4);if($op==='add'&&self::hasProperty(get_class($_this),$prop.'s')){$_this->{$prop.'s'}[]=$args[0];return$_this;}elseif($op==='set'&&self::hasProperty(get_class($_this),$prop)){$_this->$prop=$args[0];return$_this;}elseif($op==='get'&&self::hasProperty(get_class($_this),$prop)){return$_this->$prop;}}return
+self::call($_this,$name,$args);}static
 function
-callStatic($class,$name,$args){throw
+callStatic($class,$method,$args){throw
 new
-MemberAccessException("Call to undefined static method $class::$name().");}static
-function&get($_this,$name){$class=get_class($_this);if($name===''){throw
+MemberAccessException("Call to undefined static method $class::$method().");}static
+function&get($_this,$name){$class=get_class($_this);$uname=ucfirst($name);if(!isset(self::$methods[$class])){self::$methods[$class]=array_flip(get_class_methods($class));}if($name===''){throw
 new
-MemberAccessException("Cannot read a class '$class' property without name.");}if(!isset(self::$methods[$class])){self::$methods[$class]=array_flip(get_class_methods($class));}if(isset(self::$methods[$class][$name])){$val=function()use($_this,$name){return
-call_user_func_array(array($_this,$name),func_get_args());};return$val;}$name[0]=$name[0]&"\xDF";$m='get'.$name;if(isset(self::$methods[$class][$m])){$val=$_this->$m();return$val;}$m='is'.$name;if(isset(self::$methods[$class][$m])){$val=$_this->$m();return$val;}$type=isset(self::$methods[$class]['set'.$name])?'a write-only':'an undeclared';$name=func_get_arg(1);throw
+MemberAccessException("Cannot read a class '$class' property without name.");}elseif(isset(self::$methods[$class][$m='get'.$uname])||isset(self::$methods[$class][$m='is'.$uname])){$val=$_this->$m();return$val;}elseif(isset(self::$methods[$class][$name])){$val=Callback::create($_this,$name);return$val;}else{$type=isset(self::$methods[$class]['set'.$uname])?'a write-only':'an undeclared';throw
 new
-MemberAccessException("Cannot read $type property $class::\$$name.");}static
+MemberAccessException("Cannot read $type property $class::\$$name.");}}static
 function
-set($_this,$name,$value){$class=get_class($_this);if($name===''){throw
+set($_this,$name,$value){$class=get_class($_this);$uname=ucfirst($name);if(!isset(self::$methods[$class])){self::$methods[$class]=array_flip(get_class_methods($class));}if($name===''){throw
 new
-MemberAccessException("Cannot write to a class '$class' property without name.");}if(!isset(self::$methods[$class])){self::$methods[$class]=array_flip(get_class_methods($class));}$name[0]=$name[0]&"\xDF";$m='set'.$name;if(isset(self::$methods[$class][$m])){$_this->$m($value);return;}$type=isset(self::$methods[$class]['get'.$name])||isset(self::$methods[$class]['is'.$name])?'a read-only':'an undeclared';$name=func_get_arg(1);throw
+MemberAccessException("Cannot write to a class '$class' property without name.");}elseif(self::hasProperty($class,$name)){$_this->$name=$value;}elseif(isset(self::$methods[$class][$m='set'.$uname])){$_this->$m($value);}else{$type=isset(self::$methods[$class]['get'.$uname])||isset(self::$methods[$class]['is'.$uname])?'a read-only':'an undeclared';throw
 new
-MemberAccessException("Cannot write to $type property $class::\$$name.");}static
+MemberAccessException("Cannot write to $type property $class::\$$name.");}}static
 function
-remove($_this,$name){$class=get_class($_this);throw
+remove($_this,$name){$class=get_class($_this);if(!self::hasProperty($class,$name)){throw
 new
-MemberAccessException("Cannot unset the property $class::\$$name.");}static
+MemberAccessException("Cannot unset the property $class::\$$name.");}}static
 function
-has($_this,$name){if($name===''){return
-FALSE;}$class=get_class($_this);if(!isset(self::$methods[$class])){self::$methods[$class]=array_flip(get_class_methods($class));}$name[0]=$name[0]&"\xDF";return
-isset(self::$methods[$class]['get'.$name])||isset(self::$methods[$class]['is'.$name]);}}}namespace Nette\ComponentModel{use
+has($_this,$name){$class=get_class($_this);$name=ucfirst($name);if(!isset(self::$methods[$class])){self::$methods[$class]=array_flip(get_class_methods($class));}return$name!==''&&(isset(self::$methods[$class]['get'.$name])||isset(self::$methods[$class]['is'.$name]));}private
+static
+function
+hasProperty($class,$name){$prop=&self::$props[$class][$name];if($prop===NULL){$prop=FALSE;try{$rp=new\ReflectionProperty($class,$name);if($name===$rp->getName()&&$rp->isPublic()&&!$rp->isStatic()){$prop=preg_match('#^on[A-Z]#',$name)?'event':TRUE;}}catch(\ReflectionException$e){}}return$prop;}}}namespace Nette\ComponentModel{use
 Nette;class
 RecursiveComponentIterator
 extends\RecursiveArrayIterator
@@ -2931,8 +2944,7 @@ getConfig(){return$this->config;}function
 compile(array$config,$className,$parentName){$this->config=$config;$this->container=new
 Nette\DI\ContainerBuilder;$this->processParameters();$this->processExtensions();$this->processServices();return$this->generateCode($className,$parentName);}function
 processParameters(){if(isset($this->config['parameters'])){$this->container->parameters=$this->config['parameters'];}}function
-processExtensions(){foreach($this->extensions
-as$name=>$extension){$extension->loadConfiguration();}if($extra=array_diff_key($this->config,self::$reserved,$this->extensions)){$extra=implode("', '",array_keys($extra));throw
+processExtensions(){for($i=0;$slice=array_slice($this->extensions,$i,1);$i++){reset($slice)->loadConfiguration();}if($extra=array_diff_key($this->config,self::$reserved,$this->extensions)){$extra=implode("', '",array_keys($extra));throw
 new
 Nette\InvalidStateException("Found sections '$extra' in configuration, but corresponding extensions are missing.");}}function
 processServices(){$this->parseServices($this->container,$this->config);foreach($this->extensions
@@ -2941,7 +2953,7 @@ generateCode($className,$parentName){foreach($this->extensions
 as$extension){$extension->beforeCompile();$this->container->addDependency(Nette\Reflection\ClassType::from($extension)->getFileName());}$classes[]=$class=$this->container->generateClass($parentName);$class->setName($className)->addMethod('initialize');foreach($this->extensions
 as$extension){$extension->afterCompile($class);}$defs=$this->container->getDefinitions();ksort($defs);$list=array_keys($defs);foreach(array_reverse($defs,TRUE)as$name=>$def){if($def->class==='Nette\DI\NestedAccessor'&&($found=preg_grep('#^'.$name.'\.#i',$list))){$list=array_diff($list,$found);$def->class=$className.'_'.preg_replace('#\W+#','_',$name);$class->documents=preg_replace("#\S+(?= \\$$name$)#",$def->class,$class->documents);$classes[]=$accessor=new
 Nette\Utils\PhpGenerator\ClassType($def->class);foreach($found
-as$item){$short=substr($item,strlen($name)+1);$accessor->addDocument($defs[$item]->shared?"@property {$defs[$item]->class} \$$short":"@method {$defs[$item]->class} create".ucfirst("$short()"));}}}return
+as$item){if($defs[$item]->internal){continue;}$short=substr($item,strlen($name)+1);$accessor->addDocument($defs[$item]->shared?"@property {$defs[$item]->class} \$$short":"@method {$defs[$item]->class} create".ucfirst("$short()"));}}}return
 implode("\n\n\n",$classes);}static
 function
 parseServices(Nette\DI\ContainerBuilder$container,array$config,$namespace=NULL){$services=isset($config['services'])?$config['services']:array();$factories=isset($config['factories'])?$config['factories']:array();if($tmp=array_intersect_key($services,$factories)){$tmp=implode("', '",array_keys($tmp));throw
@@ -3207,7 +3219,7 @@ formatDateTime(\DateTime$value){return$value->format("'Y-m-d H:i:s'");}function
 formatLike($value,$pos){$value=addcslashes(str_replace('\\','\\\\',$value),"\x00\n\r\\'%_");return($pos<=0?"'%":"'").$value.($pos>=0?"%'":"'");}function
 applyLimit(&$sql,$limit,$offset){if($limit>=0||$offset>0){$sql.=' LIMIT '.($limit<0?'18446744073709551615':(int)$limit).($offset>0?' OFFSET '.(int)$offset:'');}}function
 normalizeRow($row,$statement){return$row;}function
-getTables(){$tables=array();foreach($this->connection->query('SHOW FULL TABLES',\PDO::FETCH_NUM)as$row){$tables[]=array('name'=>$row[0],'view'=>isset($row[1])&&$row[1]==='VIEW');}return$tables;}function
+getTables(){$tables=array();foreach($this->connection->query('SHOW FULL TABLES')as$row){$tables[]=array('name'=>$row[0],'view'=>isset($row[1])&&$row[1]==='VIEW');}return$tables;}function
 getColumns($table){$columns=array();foreach($this->connection->query('SHOW FULL COLUMNS FROM '.$this->delimite($table))as$row){$type=explode('(',$row['Type']);$columns[]=array('name'=>$row['Field'],'table'=>$table,'nativetype'=>strtoupper($type[0]),'size'=>isset($type[1])?(int)$type[1]:NULL,'unsigned'=>(bool)strstr($row['Type'],'unsigned'),'nullable'=>$row['Null']==='YES','default'=>$row['Default'],'autoincrement'=>$row['Extra']==='auto_increment','primary'=>$row['Key']==='PRI','vendor'=>(array)$row);}return$columns;}function
 getIndexes($table){$indexes=array();foreach($this->connection->query('SHOW INDEX FROM '.$this->delimite($table))as$row){$indexes[$row['Key_name']]['name']=$row['Key_name'];$indexes[$row['Key_name']]['unique']=!$row['Non_unique'];$indexes[$row['Key_name']]['primary']=$row['Key_name']==='PRIMARY';$indexes[$row['Key_name']]['columns'][$row['Seq_in_index']-1]=$row['Column_name'];}return
 array_values($indexes);}function
@@ -3227,7 +3239,7 @@ new
 Nette\NotImplementedException;}function
 applyLimit(&$sql,$limit,$offset){if($offset>0){$sql='SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM ('.$sql.') t '.($limit>=0?'WHERE ROWNUM <= '.((int)$offset+(int)$limit):'').') WHERE "__rnum" > '.(int)$offset;}elseif($limit>=0){$sql='SELECT * FROM ('.$sql.') WHERE ROWNUM <= '.(int)$limit;}}function
 normalizeRow($row,$statement){return$row;}function
-getTables(){$tables=array();foreach($this->connection->query('SELECT * FROM cat',\PDO::FETCH_NUM)as$row){if($row[1]==='TABLE'||$row[1]==='VIEW'){$tables[]=array('name'=>$row[0],'view'=>$row[1]==='VIEW');}}return$tables;}function
+getTables(){$tables=array();foreach($this->connection->query('SELECT * FROM cat')as$row){if($row[1]==='TABLE'||$row[1]==='VIEW'){$tables[]=array('name'=>$row[0],'view'=>$row[1]==='VIEW');}}return$tables;}function
 getColumns($table){throw
 new
 NotImplementedException;}function
@@ -3420,26 +3432,26 @@ DiscoveredReflection
 extends
 Nette\Object
 implements
-Nette\Database\IReflection{protected$cache;protected$cacheStorage;protected$connection;protected$structure=array('primary'=>array(),'hasMany'=>array(),'belongsTo'=>array());function
+Nette\Database\IReflection{protected$cache;protected$cacheStorage;protected$connection;protected$structure=array();function
 __construct(Nette\Caching\IStorage$storage=NULL){$this->cacheStorage=$storage;}function
 setConnection(Nette\Database\Connection$connection){$this->connection=$connection;if($this->cacheStorage){$this->cache=new
 Nette\Caching\Cache($this->cacheStorage,'Nette.Database.'.md5($connection->getDsn()));$this->structure=$this->cache->load('structure')?:$this->structure;}}function
 __destruct(){if($this->cache){$this->cache->save('structure',$this->structure);}}function
-getPrimary($table){$primary=&$this->structure['primary'][$table];if(isset($primary)){return
+getPrimary($table){$primary=&$this->structure['primary'][strtolower($table)];if(isset($primary)){return
 empty($primary)?NULL:$primary;}$columns=$this->connection->getSupplementalDriver()->getColumns($table);$primaryCount=0;foreach($columns
 as$column){if($column['primary']){$primary=$column['name'];$primaryCount++;}}if($primaryCount!==1){$primary='';return
 NULL;}return$primary;}function
-getHasManyReference($table,$key,$refresh=TRUE){$reference=$this->structure['hasMany'];if(!empty($reference[$table])){foreach($reference[$table]as$targetTable=>$targetColumn){if(stripos($targetTable,$key)!==FALSE){return
-array($targetTable,$targetColumn);}}}if(!$refresh){throw
+getHasManyReference($table,$key,$refresh=TRUE){$table=strtolower($table);$reference=&$this->structure['hasMany'];if(!empty($reference[$table])){$candidates=array();$subStringCandidatesCount=0;foreach($reference[$table]as$targetPair){list($targetColumn,$targetTable)=$targetPair;if(stripos($targetTable,$key)!==FALSE){$candidates[]=array($targetTable,$targetColumn);if(stripos($targetColumn,$table)!==FALSE){$subStringCandidatesCount++;$candidate=array($targetTable,$targetColumn);if($targetTable===$key){$candidates=array($candidate);break;}}}}if(count($candidates)===1){return$candidates[0];}elseif($subStringCandidatesCount===1){return$candidate;}elseif(!empty($candidates)){throw
+new\PDOException('Ambiguous joining column in related call.');}}if(!$refresh){throw
 new\PDOException("No reference found for \${$table}->related({$key}).");}$this->reloadAllForeignKeys();return$this->getHasManyReference($table,$key,FALSE);}function
-getBelongsToReference($table,$key,$refresh=TRUE){$reference=$this->structure['belongsTo'];if(!empty($reference[$table])){foreach($reference[$table]as$column=>$targetTable){if(stripos($column,$key)!==FALSE){return
+getBelongsToReference($table,$key,$refresh=TRUE){$table=strtolower($table);$reference=&$this->structure['belongsTo'];if(!empty($reference[$table])){foreach($reference[$table]as$column=>$targetTable){if(stripos($column,$key)!==FALSE){return
 array($targetTable,$column);}}}if(!$refresh){throw
 new\PDOException("No reference found for \${$table}->{$key}.");}$this->reloadForeignKeys($table);return$this->getBelongsToReference($table,$key,FALSE);}protected
 function
 reloadAllForeignKeys(){foreach($this->connection->getSupplementalDriver()->getTables()as$table){if($table['view']==FALSE){$this->reloadForeignKeys($table['name']);}}foreach(array_keys($this->structure['hasMany'])as$table){uksort($this->structure['hasMany'][$table],function($a,$b){return
 strlen($a)-strlen($b);});}}protected
 function
-reloadForeignKeys($table){foreach($this->connection->getSupplementalDriver()->getForeignKeys($table)as$row){$this->structure['belongsTo'][$table][$row['local']]=$row['table'];$this->structure['hasMany'][$row['table']][$table]=$row['local'];}if(isset($this->structure['belongsTo'][$table])){uksort($this->structure['belongsTo'][$table],function($a,$b){return
+reloadForeignKeys($table){foreach($this->connection->getSupplementalDriver()->getForeignKeys($table)as$row){$this->structure['belongsTo'][$table][$row['local']]=$row['table'];$this->structure['hasMany'][strtolower($row['table'])][$row['local'].$table]=array($row['local'],$table);}if(isset($this->structure['belongsTo'][$table])){uksort($this->structure['belongsTo'][$table],function($a,$b){return
 strlen($a)-strlen($b);});}}}}namespace Nette\Database{use
 Nette;class
 Row
@@ -3456,9 +3468,9 @@ SqlPreprocessor
 extends
 Nette\Object{private$connection;private$driver;private$params;private$remaining;private$counter;private$arrayMode;function
 __construct(Connection$connection){$this->connection=$connection;$this->driver=$connection->getSupplementalDriver();}function
-process($sql,$params){$this->params=$params;$this->counter=0;$this->remaining=array();$cmd=strtoupper(substr(ltrim($sql),0,6));$this->arrayMode=$cmd==='INSERT'||$cmd==='REPLAC'?'values':'assoc';$sql=Nette\Utils\Strings::replace($sql,'~\'.*?\'|".*?"|\?~s',array($this,'callback'));while($this->counter<count($params)){$sql.=' '.$this->formatValue($params[$this->counter++]);}return
+process($sql,$params){$this->params=$params;$this->counter=0;$this->remaining=array();$this->arrayMode='assoc';$sql=Nette\Utils\Strings::replace($sql,'~\'.*?\'|".*?"|\?|\b(?:INSERT|REPLACE|UPDATE)\b~si',array($this,'callback'));while($this->counter<count($params)){$sql.=' '.$this->formatValue($params[$this->counter++]);}return
 array($sql,$this->remaining);}function
-callback($m){$m=$m[0];if($m[0]==="'"||$m[0]==='"'){return$m;}else{return$this->formatValue($this->params[$this->counter++]);}}private
+callback($m){$m=$m[0];if($m[0]==="'"||$m[0]==='"'){return$m;}elseif($m==='?'){return$this->formatValue($this->params[$this->counter++]);}else{$this->arrayMode=strtoupper($m)==='UPDATE'?'assoc':'values';return$m;}}private
 function
 formatValue($value){if(is_string($value)){if(strlen($value)>20){$this->remaining[]=$value;return'?';}else{return$this->connection->quote($value);}}elseif(is_int($value)){return(string)$value;}elseif(is_float($value)){return
 rtrim(rtrim(number_format($value,10,'.',''),'0'),'.');}elseif(is_bool($value)){$this->remaining[]=$value;return'?';}elseif($value===NULL){return'NULL';}elseif($value
@@ -3508,6 +3520,7 @@ extends
 Nette\Object
 implements\IteratorAggregate,\ArrayAccess{private$table;private$data;private$modified=array();function
 __construct(array$data,Selection$table){$this->data=$data;$this->table=$table;}function
+setTable(Selection$table){$this->table=$table;}function
 getTable(){return$this->table;}function
 __toString(){try{return(string)$this->getPrimary();}catch(\Exception$e){Nette\Diagnostics\Debugger::toStringException($e);}}function
 toArray(){$this->access(NULL);return$this->data;}function
@@ -3515,7 +3528,7 @@ getPrimary(){if(!isset($this->data[$this->table->getPrimary()])){throw
 new
 Nette\NotSupportedException("Table {$this->table->getName()} does not have any primary key.");}return$this[$this->table->getPrimary()];}function
 ref($key,$throughColumn=NULL){if(!$throughColumn){list($key,$throughColumn)=$this->table->getConnection()->getDatabaseReflection()->getBelongsToReference($this->table->getName(),$key);}return$this->getReference($key,$throughColumn);}function
-related($key,$throughColumn=NULL,$forceNewInstance=FALSE){if(strpos($key,'.')!==FALSE){list($key,$throughColumn)=explode('.',$key);}elseif(!is_string($throughColumn)){list($key,$throughColumn)=$this->table->getConnection()->getDatabaseReflection()->getHasManyReference($this->table->getName(),$key);}return$this->table->getReferencingTable($key,$throughColumn,$this[$this->table->getPrimary()],$forceNewInstance);}function
+related($key,$throughColumn=NULL){if(strpos($key,'.')!==FALSE){list($key,$throughColumn)=explode('.',$key);}elseif(!$throughColumn){list($key,$throughColumn)=$this->table->getConnection()->getDatabaseReflection()->getHasManyReference($this->table->getName(),$key);}return$this->table->getReferencingTable($key,$throughColumn,$this[$this->table->getPrimary()]);}function
 update($data=NULL){if($data===NULL){$data=$this->modified;}return$this->table->getConnection()->table($this->table->getName())->where($this->table->getPrimary(),$this[$this->table->getPrimary()])->update($data);}function
 delete(){return$this->table->getConnection()->table($this->table->getName())->where($this->table->getPrimary(),$this[$this->table->getPrimary()])->delete();}function
 getIterator(){$this->access(NULL);return
@@ -3541,78 +3554,76 @@ PDO;class
 Selection
 extends
 Nette\Object
-implements\Iterator,\ArrayAccess,\Countable{protected$connection;protected$name;protected$primary;protected$rows;protected$data;protected$select=array();protected$where=array();protected$conditions=array();protected$parameters=array();protected$order=array();protected$limit=NULL;protected$offset=NULL;protected$group='';protected$having='';protected$checkReferenceNewKeys=FALSE;protected$referenced=array();protected$referencing=array();protected$accessed;protected$prevAccessed;protected$keys=array();protected$delimitedName;protected$delimitedPrimary;function
-__construct($table,Nette\Database\Connection$connection){$this->name=$table;$this->connection=$connection;$this->primary=$connection->getDatabaseReflection()->getPrimary($table);$this->delimitedName=$this->tryDelimite($this->name);$this->delimitedPrimary=$connection->getSupplementalDriver()->delimite($this->primary);}function
-__destruct(){$cache=$this->connection->getCache();if($cache&&!$this->select&&$this->rows!==NULL){$cache->save(array(__CLASS__,$this->name,$this->conditions),$this->accessed);}$this->rows=NULL;}function
+implements\Iterator,\ArrayAccess,\Countable{protected$connection;protected$sqlBuilder;protected$name;protected$primary;protected$rows;protected$data;protected$referenced=array();protected$referencing=array();protected$referencingPrototype=array();protected$aggregation=array();protected$accessed;protected$prevAccessed;protected$observeCache=FALSE;protected$checkReferenced=FALSE;protected$keys=array();function
+__construct($table,Nette\Database\Connection$connection){$this->name=$table;$this->connection=$connection;$this->primary=$connection->getDatabaseReflection()->getPrimary($table);$this->sqlBuilder=new
+SqlBuilder($this);}function
+__destruct(){$this->saveCacheState();}function
+__clone(){$this->sqlBuilder=clone$this->sqlBuilder;$this->sqlBuilder->setSelection($this);}function
 getConnection(){return$this->connection;}function
 getName(){return$this->name;}function
 getPrimary(){return$this->primary;}function
-get($key){$clone=clone$this;$clone->where($this->delimitedPrimary,$key);return$clone->fetch();}function
-select($columns){$this->__destruct();$this->select[]=$columns;return$this;}function
-find($key){return$this->where($this->delimitedPrimary,$key);}function
+getSql(){return$this->sqlBuilder->buildSelectQuery();}function
+getPreviousAccessed(){$cache=$this->connection->getCache();if($this->rows===NULL&&$cache&&!is_string($this->prevAccessed)){$this->accessed=$this->prevAccessed=$cache->load(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions()));}return$this->prevAccessed;}function
+getSqlBuilder(){return$this->sqlBuilder;}function
+get($key){$clone=clone$this;$clone->where($this->primary,$key);return$clone->fetch();}function
+fetch(){$this->execute();$return=current($this->data);next($this->data);return$return;}function
+fetchPairs($key,$value=NULL){$return=array();foreach($this
+as$row){$return[is_object($row[$key])?(string)$row[$key]:$row[$key]]=($value?$row[$value]:$row);}return$return;}function
+select($columns){$this->emptyResultSet();$this->sqlBuilder->addSelect($columns);return$this;}function
+find($key){return$this->where($this->primary,$key);}function
 where($condition,$parameters=array()){if(is_array($condition)){foreach($condition
-as$key=>$val){if(is_int($key)){$this->where($val);}else{$this->where($key,$val);}}return$this;}$hash=md5(json_encode(func_get_args()));if(isset($this->conditions[$hash])){return$this;}$this->__destruct();$this->conditions[$hash]=$condition;$condition=$this->removeExtraTables($condition);$condition=$this->tryDelimite($condition);$args=func_num_args();if($args!==2||strpbrk($condition,'?:')){if($args!==2||!is_array($parameters)){$parameters=func_get_args();array_shift($parameters);}$this->parameters=array_merge($this->parameters,$parameters);}elseif($parameters===NULL){$condition.=' IS NULL';}elseif($parameters
-instanceof
-Selection){$clone=clone$parameters;if(!$clone->select){$clone->select=array($clone->primary);}if($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)!=='mysql'){$condition.=' IN ('.$clone->getSql().')';}else{$in=array();foreach($clone
-as$row){$this->parameters[]=array_values(iterator_to_array($row));$in[]=(count($row)===1?'?':'(?)');}$condition.=' IN ('.($in?implode(', ',$in):'NULL').')';}}elseif(!is_array($parameters)){$condition.=' = ?';$this->parameters[]=$parameters;}else{if($parameters){$condition.=" IN (?)";$this->parameters[]=$parameters;}else{$condition.=" IN (NULL)";}}$this->where[]=$condition;return$this;}function
-order($columns){$this->rows=NULL;$this->order[]=$columns;return$this;}function
-limit($limit,$offset=NULL){$this->rows=NULL;$this->limit=$limit;$this->offset=$offset;return$this;}function
-page($page,$itemsPerPage){$this->rows=NULL;$this->limit=$itemsPerPage;$this->offset=($page-1)*$itemsPerPage;return$this;}function
-group($columns,$having=''){$this->__destruct();$this->group=$columns;$this->having=$having;return$this;}function
-aggregation($function){$selection=new
-Selection($this->name,$this->connection);$selection->where=$this->where;$selection->parameters=$this->parameters;$selection->conditions=$this->conditions;$selection->select($function);foreach($selection->fetch()as$val){return$val;}}function
-count($column=''){if(!$column){$this->execute();return
+as$key=>$val){if(is_int($key)){$this->where($val);}else{$this->where($key,$val);}}return$this;}$args=func_get_args();if(call_user_func_array(array($this->sqlBuilder,'addWhere'),$args)){$this->emptyResultSet();}return$this;}function
+order($columns){$this->emptyResultSet();$this->sqlBuilder->addOrder($columns);return$this;}function
+limit($limit,$offset=NULL){$this->emptyResultSet();$this->sqlBuilder->setLimit($limit,$offset);return$this;}function
+page($page,$itemsPerPage){return$this->limit($itemsPerPage,($page-1)*$itemsPerPage);}function
+group($columns,$having=NULL){$this->emptyResultSet();$this->sqlBuilder->setGroup($columns,$having);return$this;}function
+aggregation($function){$selection=$this->createSelectionInstance();$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());$selection->select($function);foreach($selection->fetch()as$val){return$val;}}function
+count($column=NULL){if(!$column){$this->execute();return
 count($this->data);}return$this->aggregation("COUNT($column)");}function
 min($column){return$this->aggregation("MIN($column)");}function
 max($column){return$this->aggregation("MAX($column)");}function
-sum($column){return$this->aggregation("SUM($column)");}function
-getSql(){$join=$this->createJoins(implode(',',$this->conditions),TRUE)+$this->createJoins(implode(',',$this->select).",$this->group,$this->having,".implode(',',$this->order));$cache=$this->connection->getCache();if($this->rows===NULL&&$cache&&!is_string($this->prevAccessed)){$this->accessed=$this->prevAccessed=$cache->load(array(__CLASS__,$this->name,$this->conditions));}$prefix=$join?"$this->delimitedName.":'';if($this->select){$cols=$this->tryDelimite($this->removeExtraTables(implode(', ',$this->select)));}elseif($this->prevAccessed){$cols=array_map(array($this->connection->getSupplementalDriver(),'delimite'),array_keys(array_filter($this->prevAccessed)));$cols=$prefix.implode(', '.$prefix,$cols);}else{$cols=$prefix.'*';}return"SELECT{$this->topString()} $cols FROM $this->delimitedName".implode($join).$this->whereString();}protected
+sum($column){return$this->aggregation("SUM($column)");}protected
 function
-createJoins($val,$inner=FALSE){$driver=$this->connection->getSupplementalDriver();$reflection=$this->connection->getDatabaseReflection();$joins=array();preg_match_all('~\\b([a-z][\\w.:]*[.:])([a-z]\\w*|\*)(\\s+IS\\b|\\s*<=>)?~i',$val,$matches);foreach($matches[1]as$names){$parent=$this->name;if($names!=="$parent."){preg_match_all('~\\b([a-z][\\w]*|\*)([.:])~i',$names,$matches,PREG_SET_ORDER);foreach($matches
-as$match){list(,$name,$delimiter)=$match;if($delimiter===':'){list($table,$primary)=$reflection->getHasManyReference($parent,$name);$column=$reflection->getPrimary($parent);}else{list($table,$column)=$reflection->getBelongsToReference($parent,$name);$primary=$reflection->getPrimary($table);}$joins[$name]=' '.(!isset($joins[$name])&&$inner&&!isset($match[3])?'INNER':'LEFT').' JOIN '.$driver->delimite($table).($table!==$name?' AS '.$driver->delimite($name):'').' ON '.$driver->delimite($parent).'.'.$driver->delimite($column).' = '.$driver->delimite($name).'.'.$driver->delimite($primary);$parent=$name;}}}return$joins;}protected
-function
-execute(){if($this->rows!==NULL){return;}try{$result=$this->query($this->getSql());}catch(\PDOException$exception){if(!$this->select&&$this->prevAccessed){$this->prevAccessed='';$this->accessed=array();$result=$this->query($this->getSql());}else{throw$exception;}}$this->rows=array();$result->setFetchMode(PDO::FETCH_ASSOC);foreach($result
+execute(){if($this->rows!==NULL){return;}$this->observeCache=TRUE;try{$result=$this->query($this->sqlBuilder->buildSelectQuery());}catch(\PDOException$exception){if(!$this->sqlBuilder->getSelect()&&$this->prevAccessed){$this->prevAccessed='';$this->accessed=array();$result=$this->query($this->sqlBuilder->buildSelectQuery());}else{throw$exception;}}$this->rows=array();$result->setFetchMode(PDO::FETCH_ASSOC);foreach($result
 as$key=>$row){$row=$result->normalizeRow($row);$this->rows[isset($row[$this->primary])?$row[$this->primary]:$key]=$this->createRow($row);}$this->data=$this->rows;if(isset($row[$this->primary])&&!is_string($this->accessed)){$this->accessed[$this->primary]=TRUE;}}protected
 function
 createRow(array$row){return
 new
 ActiveRow($row,$this);}protected
 function
-whereString(){$return='';$driver=$this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);$where=$this->where;if($this->limit!==NULL&&$driver==='oci'){$where[]=($this->offset?"rownum > $this->offset AND ":'').'rownum <= '.($this->limit+$this->offset);}if($where){$return.=' WHERE ('.implode(') AND (',$where).')';}if($this->group){$return.=' GROUP BY '.$this->tryDelimite($this->removeExtraTables($this->group));}if($this->having){$return.=' HAVING '.$this->tryDelimite($this->removeExtraTables($this->having));}if($this->order){$return.=' ORDER BY '.$this->tryDelimite($this->removeExtraTables(implode(', ',$this->order)));}if($this->limit!==NULL&&$driver!=='oci'&&$driver!=='dblib'){$return.=" LIMIT $this->limit";if($this->offset!==NULL){$return.=" OFFSET $this->offset";}}return$return;}protected
+createSelectionInstance($table=NULL){return
+new
+Selection($table?:$this->name,$this->connection);}protected
 function
-topString(){if($this->limit!==NULL&&$this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)==='dblib'){return" TOP ($this->limit)";}return'';}protected
+createGroupedSelectionInstance($table,$column){return
+new
+GroupedSelection($this,$table,$column);}protected
 function
-tryDelimite($s){$driver=$this->connection->getSupplementalDriver();return
-preg_replace_callback('#(?<=[^\w`"\[]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#i',function($m)use($driver){return
-strtoupper($m[0])===$m[0]?$m[0]:$driver->delimite($m[0]);},$s);}protected
+query($query){return$this->connection->queryArgs($query,$this->sqlBuilder->getParameters());}protected
 function
-removeExtraTables($expression){return
-preg_replace('~(?:\\b[a-z_][a-z0-9_.:]*[.:])?([a-z_][a-z0-9_]*)[.:]([a-z_*])~i','\\1.\\2',$expression);}protected
+emptyResultSet(){if($this->rows===NULL){return;}$this->rows=NULL;$this->saveCacheState();}protected
 function
-query($query){return$this->connection->queryArgs($query,$this->parameters);}function
+saveCacheState(){if($this->observeCache&&($cache=$this->connection->getCache())&&!$this->sqlBuilder->getSelect()&&$this->accessed!=$this->prevAccessed){$cache->save(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions()),$this->accessed);}}protected
+function
+getRefTable(&$refPath){return$this;}function
 access($key,$cache=TRUE){if($cache===NULL){if(is_array($this->accessed)){$this->accessed[$key]=FALSE;}return
-FALSE;}if($key===NULL){$this->accessed='';}elseif(!is_string($this->accessed)){$this->accessed[$key]=$cache;}if($cache&&!$this->select&&$this->prevAccessed&&($key===NULL||!isset($this->prevAccessed[$key]))){$this->prevAccessed='';$this->__destruct();return
+FALSE;}if($key===NULL){$this->accessed='';}elseif(!is_string($this->accessed)){$this->accessed[$key]=$cache;}if($cache&&!$this->sqlBuilder->getSelect()&&$this->prevAccessed&&($key===NULL||!isset($this->prevAccessed[$key]))){$this->prevAccessed='';$this->emptyResultSet();return
 TRUE;}return
 FALSE;}function
 insert($data){if($data
 instanceof
 Selection){$data=$data->getSql();}elseif($data
-instanceof\Traversable){$data=iterator_to_array($data);}$return=$this->connection->query("INSERT INTO $this->delimitedName",$data);if(!is_array($data)){return$return->rowCount();}$this->checkReferenceNewKeys=TRUE;if(!isset($data[$this->primary])&&($id=$this->connection->lastInsertId())){$data[$this->primary]=$id;return$this->rows[$id]=new
-ActiveRow($data,$this);}else{return
-new
-ActiveRow($data,$this);}}function
+instanceof\Traversable){$data=iterator_to_array($data);}$return=$this->connection->query($this->sqlBuilder->buildInsertQuery(),$data);$this->checkReferenced=TRUE;if(!is_array($data)){return$return->rowCount();}if(!isset($data[$this->primary])&&($id=$this->connection->lastInsertId())){$data[$this->primary]=$id;return$this->rows[$id]=$this->createRow($data);}else{return$this->createRow($data);}}function
 update($data){if($data
 instanceof\Traversable){$data=iterator_to_array($data);}elseif(!is_array($data)){throw
 new
 Nette\InvalidArgumentException;}if(!$data){return
-0;}return$this->connection->queryArgs('UPDATE'.$this->topString()." $this->delimitedName SET ?".$this->whereString(),array_merge(array($data),$this->parameters))->rowCount();}function
-delete(){return$this->query('DELETE'.$this->topString()." FROM $this->delimitedName".$this->whereString())->rowCount();}function
-getReferencedTable($table,$column,$checkReferenceNewKeys=FALSE){$referenced=&$this->referenced["$table.$column"];if($referenced===NULL||$checkReferenceNewKeys||$this->checkReferenceNewKeys){$keys=array();$this->execute();foreach($this->rows
+0;}return$this->connection->queryArgs($this->sqlBuilder->buildUpdateQuery(),array_merge(array($data),$this->sqlBuilder->getParameters()))->rowCount();}function
+delete(){return$this->query($this->sqlBuilder->buildDeleteQuery())->rowCount();}function
+getReferencedTable($table,$column,$checkReferenced=FALSE){$referenced=&$this->getRefTable($refPath)->referenced[$refPath."$table.$column"];if($referenced===NULL||$checkReferenced||$this->checkReferenced){$this->execute();$this->checkReferenced=FALSE;$keys=array();foreach($this->rows
 as$row){if($row[$column]===NULL)continue;$key=$row[$column]instanceof
-ActiveRow?$row[$column]->getPrimary():$row[$column];$keys[$key]=TRUE;}if($referenced!==NULL&&$keys===array_keys($this->rows)){$this->checkReferenceNewKeys=FALSE;return$referenced;}if($keys){$referenced=new
-Selection($table,$this->connection);$referenced->where($table.'.'.$referenced->primary,array_keys($keys));}else{$referenced=array();}}return$referenced;}function
-getReferencingTable($table,$column,$active=NULL,$forceNewInstance=FALSE){$referencing=&$this->referencing["$table:$column"];if(!$referencing||$forceNewInstance){$referencing=new
-GroupedSelection($table,$this,$column);}return$referencing->setActive($active)->where("$table.$column",array_keys((array)$this->rows));}function
+ActiveRow?$row[$column]->getPrimary():$row[$column];$keys[$key]=TRUE;}if($referenced!==NULL&&array_keys($keys)===array_keys($referenced->rows)){return$referenced;}if($keys){$referenced=$this->createSelectionInstance($table);$referenced->where($referenced->primary,array_keys($keys));}else{$referenced=array();}}return$referenced;}function
+getReferencingTable($table,$column,$active=NULL){$prototype=&$this->getRefTable($refPath)->referencingPrototype[$refPath."$table.$column"];if(!$prototype){$prototype=$this->createGroupedSelectionInstance($table,$column);$prototype->where("$table.$column",array_keys((array)$this->rows));}$clone=clone$prototype;$clone->setActive($active);return$clone;}function
 rewind(){$this->execute();$this->keys=array_keys($this->data);reset($this->keys);}function
 current(){return$this->data[current($this->keys)];}function
 key(){return
@@ -3624,35 +3635,81 @@ offsetSet($key,$value){$this->execute();$this->data[$key]=$value;}function
 offsetGet($key){$this->execute();return$this->data[$key];}function
 offsetExists($key){$this->execute();return
 isset($this->data[$key]);}function
-offsetUnset($key){$this->execute();unset($this->data[$key]);}function
-fetch(){$this->execute();$return=current($this->data);next($this->data);return$return;}function
-fetchPairs($key,$value=''){$return=array();foreach($this
-as$row){$return[is_object($row[$key])?(string)$row[$key]:$row[$key]]=($value!==''?$row[$value]:$row);}return$return;}}class
+offsetUnset($key){$this->execute();unset($this->data[$key]);}}class
 GroupedSelection
 extends
-Selection{protected$refTable;protected$column;protected$delimitedColumn;protected$active;protected$referencing;protected$aggregation=array();function
-__construct($name,Selection$refTable,$column){parent::__construct($name,$refTable->connection);$this->refTable=$refTable;$this->column=$column;$this->delimitedColumn=$this->connection->getSupplementalDriver()->delimite($this->column);}function
-setActive($active){$this->rows=NULL;$this->active=$active;$this->select=$this->where=$this->conditions=$this->parameters=$this->order=array();$this->limit=$this->offset=NULL;$this->group=$this->having='';return$this;}function
+Selection{protected$refTable;protected$column;protected$active;function
+__construct(Selection$refTable,$table,$column){parent::__construct($table,$refTable->connection);$this->refTable=$refTable;$this->column=$column;}function
+setActive($active){$this->active=$active;return$this;}function
 through($column){trigger_error(__METHOD__.'() is deprecated; use '.__CLASS__.'::related("'.$this->name.'", "'.$column.'") instead.',E_USER_WARNING);$this->column=$column;$this->delimitedColumn=$this->refTable->connection->getSupplementalDriver()->delimite($this->column);return$this;}function
-select($columns){if(!$this->select){$this->select[]="$this->delimitedName.$this->delimitedColumn";}return
+select($columns){if(!$this->sqlBuilder->getSelect()){$this->sqlBuilder->addSelect("$this->name.$this->column");}return
 parent::select($columns);}function
-order($columns){if(!$this->order){$this->order[]="$this->delimitedName.$this->delimitedColumn".(preg_match('~\\bDESC$~i',$columns)?' DESC':'');}return
+order($columns){if(!$this->sqlBuilder->getOrder()){$this->sqlBuilder->addOrder("$this->name.$this->column".(preg_match('~\\bDESC$~i',$columns)?' DESC':''));}return
 parent::order($columns);}function
-aggregation($function){$aggregation=&$this->aggregation[$function.implode('',$this->where).implode('',$this->conditions)];if($aggregation===NULL){$aggregation=array();$selection=new
-Selection($this->name,$this->connection);$selection->where=$this->where;$selection->parameters=$this->parameters;$selection->conditions=$this->conditions;$selection->select($function);$selection->select("{$this->name}.{$this->column}");$selection->group("{$this->name}.{$this->column}");foreach($selection
+aggregation($function){$aggregation=&$this->getRefTable($refPath)->aggregation[$refPath.$function.$this->sqlBuilder->buildSelectQuery().json_encode($this->sqlBuilder->getParameters())];if($aggregation===NULL){$aggregation=array();$selection=$this->createSelectionInstance();$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());$selection->select($function);$selection->select("$this->name.$this->column");$selection->group("$this->name.$this->column");foreach($selection
 as$row){$aggregation[$row[$this->column]]=$row;}}if(isset($aggregation[$this->active])){foreach($aggregation[$this->active]as$val){return$val;}}}function
-count($column=''){$return=parent::count($column);return
-isset($return)?$return:0;}function
+count($column=NULL){$return=parent::count($column);return
+isset($return)?$return:0;}protected
+function
+execute(){if($this->rows!==NULL){return;}$hash=md5($this->sqlBuilder->buildSelectQuery().json_encode($this->sqlBuilder->getParameters()));$referencing=&$this->getRefTable($refPath)->referencing[$refPath.$hash];$this->rows=&$referencing['rows'];$this->referenced=&$referencing['refs'];$this->accessed=&$referencing['accessed'];$refData=&$referencing['data'];if($refData===NULL){$limit=$this->sqlBuilder->getLimit();$rows=count($this->refTable->rows);if($limit&&$rows>1){$this->sqlBuilder->setLimit(NULL,NULL);}parent::execute();$this->sqlBuilder->setLimit($limit,NULL);$refData=array();$offset=array();foreach($this->rows
+as$key=>$row){$ref=&$refData[$row[$this->column]];$skip=&$offset[$row[$this->column]];if($limit===NULL||$rows<=1||(count($ref)<$limit&&$skip>=$this->sqlBuilder->getOffset())){$ref[$key]=$row;}else{unset($this->rows[$key]);}$skip++;unset($ref,$skip);}}$this->data=&$refData[$this->active];if($this->data===NULL){$this->data=array();}else{foreach($this->data
+as$row){$row->setTable($this);}reset($this->data);}}protected
+function
+getRefTable(&$refPath){$refObj=$this->refTable;$refPath=$this->name.'.';while($refObj
+instanceof
+GroupedSelection){$refPath.=$refObj->name.'.';$refObj=$refObj->refTable;}return$refObj;}function
 insert($data){if($data
 instanceof\Traversable&&!$data
 instanceof
 Selection){$data=iterator_to_array($data);}if(Nette\Utils\Validators::isList($data)){foreach(array_keys($data)as$key){$data[$key][$this->column]=$this->active;}}else{$data[$this->column]=$this->active;}return
 parent::insert($data);}function
-update($data){$condition=array($this->where,$this->parameters);$this->where[0]="$this->delimitedColumn = ?";$this->parameters[0]=$this->active;$return=parent::update($data);list($this->where,$this->parameters)=$condition;return$return;}function
-delete(){$condition=array($this->where,$this->parameters);$this->where[0]="$this->delimitedColumn = ?";$this->parameters[0]=$this->active;$return=parent::delete();list($this->where,$this->parameters)=$condition;return$return;}protected
+update($data){$builder=$this->sqlBuilder;$this->sqlBuilder=new
+SqlBuilder($this);$this->where($this->column,$this->active);$return=parent::update($data);$this->sqlBuilder=$builder;return$return;}function
+delete(){$builder=$this->sqlBuilder;$this->sqlBuilder=new
+SqlBuilder($this);$this->where($this->column,$this->active);$return=parent::delete();$this->sqlBuilder=$builder;return$return;}}class
+SqlBuilder
+extends
+Nette\Object{protected$selection;protected$connection;protected$delimitedTable;protected$select=array();protected$where=array();protected$conditions=array();protected$parameters=array();protected$order=array();protected$limit=NULL;protected$offset=NULL;protected$group='';protected$having='';function
+__construct(Selection$selection){$this->selection=$selection;$this->connection=$selection->getConnection();$this->delimitedTable=$this->connection->getSupplementalDriver()->delimite($selection->getName());}function
+setSelection(Selection$selection){$this->selection=$selection;}function
+buildInsertQuery(){return"INSERT INTO {$this->delimitedTable}";}function
+buildUpdateQuery(){return"UPDATE{$this->buildTopClause()} {$this->delimitedTable} SET ?".$this->buildConditions();}function
+buildDeleteQuery(){return"DELETE{$this->buildTopClause()} FROM {$this->delimitedTable}".$this->buildConditions();}function
+importConditions(SqlBuilder$builder){$this->where=$builder->where;$this->parameters=$builder->parameters;$this->conditions=$builder->conditions;}function
+addSelect($columns){$this->select[]=$columns;}function
+getSelect(){return$this->select;}function
+addWhere($condition,$parameters=array()){$args=func_get_args();$hash=md5(json_encode($args));if(isset($this->conditions[$hash])){return
+FALSE;}$this->conditions[$hash]=$condition;$condition=$this->removeExtraTables($condition);$condition=$this->tryDelimite($condition);if(count($args)!==2||strpbrk($condition,'?:')){if(count($args)!==2||!is_array($parameters)){$parameters=$args;array_shift($parameters);}$this->parameters=array_merge($this->parameters,$parameters);}elseif($parameters===NULL){$condition.=' IS NULL';}elseif($parameters
+instanceof
+Selection){$clone=clone$parameters;if(!$clone->getSqlBuilder()->select){$clone->select($clone->primary);}if($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)!=='mysql'){$condition.=' IN ('.$clone->getSql().')';}else{$in=array();foreach($clone
+as$row){$this->parameters[]=array_values(iterator_to_array($row));$in[]=(count($row)===1?'?':'(?)');}$condition.=' IN ('.($in?implode(', ',$in):'NULL').')';}}elseif(!is_array($parameters)){$condition.=' = ?';$this->parameters[]=$parameters;}else{if($parameters){$condition.=" IN (?)";$this->parameters[]=$parameters;}else{$condition.=" IN (NULL)";}}$this->where[]=$condition;return
+TRUE;}function
+getConditions(){return
+array_values($this->conditions);}function
+addOrder($columns){$this->order[]=$columns;}function
+getOrder(){return$this->order;}function
+setLimit($limit,$offset){$this->limit=$limit;$this->offset=$offset;}function
+getLimit(){return$this->limit;}function
+getOffset(){return$this->offset;}function
+setGroup($columns,$having){$this->group=$columns;$this->having=$having;}function
+getGroup(){return$this->group;}function
+getHaving(){return$this->having;}function
+buildSelectQuery(){$join=$this->buildJoins(implode(',',$this->conditions),TRUE);$join+=$this->buildJoins(implode(',',$this->select).",{$this->group},{$this->having},".implode(',',$this->order));$prefix=$join?"{$this->delimitedTable}.":'';if($this->select){$cols=$this->tryDelimite($this->removeExtraTables(implode(', ',$this->select)));}elseif($prevAccessed=$this->selection->getPreviousAccessed()){$cols=array_map(array($this->connection->getSupplementalDriver(),'delimite'),array_keys(array_filter($prevAccessed)));$cols=$prefix.implode(', '.$prefix,$cols);}else{$cols=$prefix.'*';}return"SELECT{$this->buildTopClause()} {$cols} FROM {$this->delimitedTable}".implode($join).$this->buildConditions();}function
+getParameters(){return$this->parameters;}protected
 function
-execute(){if($this->rows!==NULL){return;}$hash=md5($this->getSql().json_encode($this->parameters));$referencing=&$this->referencing[$hash];if($referencing===NULL){$limit=$this->limit;$rows=count($this->refTable->rows);if($this->limit&&$rows>1){$this->limit=NULL;}parent::execute();$this->limit=$limit;$referencing=array();$offset=array();foreach($this->rows
-as$key=>$row){$ref=&$referencing[$row[$this->column]];$skip=&$offset[$row[$this->column]];if($limit===NULL||$rows<=1||(count($ref)<$limit&&$skip>=$this->offset)){$ref[$key]=$row;}else{unset($this->rows[$key]);}$skip++;unset($ref,$skip);}}$this->data=&$referencing[$this->active];if($this->data===NULL){$this->data=array();}else{reset($this->data);}}}}namespace Nette\DI{use
+buildJoins($val,$inner=FALSE){$driver=$this->selection->getConnection()->getSupplementalDriver();$reflection=$this->selection->getConnection()->getDatabaseReflection();$joins=array();preg_match_all('~\\b([a-z][\\w.:]*[.:])([a-z]\\w*|\*)(\\s+IS\\b|\\s*<=>)?~i',$val,$matches);foreach($matches[1]as$names){$parent=$this->selection->getName();if($names!=="$parent."){preg_match_all('~\\b([a-z][\\w]*|\*)([.:])~i',$names,$matches,PREG_SET_ORDER);foreach($matches
+as$match){list(,$name,$delimiter)=$match;if($delimiter===':'){list($table,$primary)=$reflection->getHasManyReference($parent,$name);$column=$reflection->getPrimary($parent);}else{list($table,$column)=$reflection->getBelongsToReference($parent,$name);$primary=$reflection->getPrimary($table);}$joins[$name]=' '.(!isset($joins[$name])&&$inner&&!isset($match[3])?'INNER':'LEFT').' JOIN '.$driver->delimite($table).($table!==$name?' AS '.$driver->delimite($name):'').' ON '.$driver->delimite($parent).'.'.$driver->delimite($column).' = '.$driver->delimite($name).'.'.$driver->delimite($primary);$parent=$name;}}}return$joins;}protected
+function
+buildConditions(){$return='';$driver=$this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);$where=$this->where;if($this->limit!==NULL&&$driver==='oci'){$where[]=($this->offset?"rownum > $this->offset AND ":'').'rownum <= '.($this->limit+$this->offset);}if($where){$return.=' WHERE ('.implode(') AND (',$where).')';}if($this->group){$return.=' GROUP BY '.$this->tryDelimite($this->removeExtraTables($this->group));}if($this->having){$return.=' HAVING '.$this->tryDelimite($this->removeExtraTables($this->having));}if($this->order){$return.=' ORDER BY '.$this->tryDelimite($this->removeExtraTables(implode(', ',$this->order)));}if($this->limit!==NULL&&$driver!=='oci'&&$driver!=='dblib'){$return.=" LIMIT $this->limit";if($this->offset!==NULL){$return.=" OFFSET $this->offset";}}return$return;}protected
+function
+buildTopClause(){if($this->limit!==NULL&&$this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)==='dblib'){return" TOP ($this->limit)";}return'';}protected
+function
+tryDelimite($s){$driver=$this->connection->getSupplementalDriver();return
+preg_replace_callback('#(?<=[^\w`"\[]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#i',function($m)use($driver){return
+strtoupper($m[0])===$m[0]?$m[0]:$driver->delimite($m[0]);},$s);}protected
+function
+removeExtraTables($expression){return
+preg_replace('~(?:\\b[a-z_][a-z0-9_.:]*[.:])?([a-z_][a-z0-9_]*)[.:]([a-z_*])~i','\\1.\\2',$expression);}}}namespace Nette\DI{use
 Nette;class
 Container
 extends
@@ -3669,7 +3726,8 @@ new
 Nette\InvalidStateException("Service '$name' has already been registered.");}if(is_object($service)&&!$service
 instanceof\Closure&&!$service
 instanceof
-Nette\Callback){$this->registry[$name]=$service;$this->meta[$name]=$meta;return$this;}elseif(!is_string($service)||strpos($service,':')!==FALSE){$service=callback($service);}$this->factories[$name]=array($service);$this->registry[$name]=&$this->factories[$name][1];$this->meta[$name]=$meta;return$this;}function
+Nette\Callback){$this->registry[$name]=$service;$this->meta[$name]=$meta;return$this;}elseif(!is_string($service)||strpos($service,':')!==FALSE){$service=new
+Nette\Callback($service);}$this->factories[$name]=array($service);$this->registry[$name]=&$this->factories[$name][1];$this->meta[$name]=$meta;return$this;}function
 removeService($name){$this->updating();unset($this->registry[$name],$this->factories[$name],$this->meta[$name]);}function
 getService($name){if(isset($this->registry[$name])){return$this->registry[$name];}elseif(isset($this->creating[$name])){throw
 new
@@ -3701,7 +3759,8 @@ ServiceCreationException("Class $class is not instantiable.");}elseif($construct
 new
 ServiceCreationException("Unable to pass arguments, class $class has no constructor.");}return
 new$class;}function
-callMethod($function,array$args=array()){$callback=callback($function);return$callback->invokeArgs(Helpers::autowireArguments($callback->toReflection(),$args,$this));}function
+callMethod($function,array$args=array()){$callback=new
+Nette\Callback($function);return$callback->invokeArgs(Helpers::autowireArguments($callback->toReflection(),$args,$this));}function
 expand($s){return
 Helpers::expand($s,$this->parameters);}function&__get($name){if(!isset($this->registry[$name])){$this->getService($name);}return$this->registry[$name];}function
 __set($name,$service){$this->updating();if(!is_string($name)||$name===''){throw
@@ -3760,7 +3819,8 @@ resolveClass($name,$recursive=array()){if(isset($recursive[$name])){throw
 new
 Nette\InvalidArgumentException('Circular reference detected for services: '.implode(', ',array_keys($recursive)).'.');}$recursive[$name]=TRUE;$def=$this->definitions[$name];$factory=$this->normalizeEntity($this->expand($def->factory->entity));if($def->class){return$def->class;}elseif(is_array($factory)){if($service=$this->getServiceName($factory[0])){if(Strings::contains($service,'\\')){throw
 new
-ServiceCreationException("Unable resolve class name for service '$name'.");}$factory[0]=$this->resolveClass($service,$recursive);if(!$factory[0]){return;}}$factory=callback($factory);if(!$factory->isCallable()){throw
+ServiceCreationException("Unable resolve class name for service '$name'.");}$factory[0]=$this->resolveClass($service,$recursive);if(!$factory[0]){return;}}$factory=new
+Nette\Callback($factory);if(!$factory->isCallable()){throw
 new
 Nette\InvalidStateException("Factory '$factory' is not callable.");}try{$reflection=$factory->toReflection();$def->class=preg_replace('#[|\s].*#','',$reflection->getAnnotation('return'));if($def->class&&!class_exists($def->class)&&$def->class[0]!=='\\'&&$reflection
 instanceof\ReflectionMethod){$def->class=$reflection->getDeclaringClass()->getNamespaceName().'\\'.$def->class;}}catch(\ReflectionException$e){}}elseif($service=$this->getServiceName($factory)){if(Strings::contains($service,'\\')){$def->autowired=FALSE;return$def->class=$service;}if($this->definitions[$service]->shared){$def->autowired=FALSE;}return$def->class=$this->resolveClass($service,$recursive);}else{return$def->class=$factory;}}function
@@ -3789,7 +3849,7 @@ Nette\Reflection\GlobalFunction(create_function(implode(', ',$params),''));$argu
 new
 ServiceCreationException("Unable to pass arguments, class $entity has no constructor.");}return$this->formatPhp("new $entity".($arguments?'(?*)':''),array($arguments),$self);}elseif(!Validators::isList($entity)||count($entity)!==2){throw
 new
-Nette\InvalidStateException("Expected class, method or property, ".PhpHelpers::dump($entity)." given.");}elseif($entity[0]===''){return$this->formatPhp("$entity[1](?*)",array($arguments),$self);}elseif(Strings::contains($entity[1],'$')){Validators::assert($arguments,'list:1',"setup arguments for '".callback($entity)."'");if($this->getServiceName($entity[0],$self)){return$this->formatPhp('?->? = ?',array($entity[0],substr($entity[1],1),$arguments[0]),$self);}else{return$this->formatPhp($entity[0].'::$? = ?',array(substr($entity[1],1),$arguments[0]),$self);}}elseif($service=$this->getServiceName($entity[0],$self)){if($this->definitions[$service]->class){$arguments=$this->autowireArguments($this->definitions[$service]->class,$entity[1],$arguments);}return$this->formatPhp('?->?(?*)',array($entity[0],$entity[1],$arguments),$self);}else{$arguments=$this->autowireArguments($entity[0],$entity[1],$arguments);return$this->formatPhp("$entity[0]::$entity[1](?*)",array($arguments),$self);}}function
+Nette\InvalidStateException("Expected class, method or property, ".PhpHelpers::dump($entity)." given.");}elseif($entity[0]===''){return$this->formatPhp("$entity[1](?*)",array($arguments),$self);}elseif(Strings::contains($entity[1],'$')){Validators::assert($arguments,'list:1',"setup arguments for '".Nette\Callback::create($entity)."'");if($this->getServiceName($entity[0],$self)){return$this->formatPhp('?->? = ?',array($entity[0],substr($entity[1],1),$arguments[0]),$self);}else{return$this->formatPhp($entity[0].'::$? = ?',array(substr($entity[1],1),$arguments[0]),$self);}}elseif($service=$this->getServiceName($entity[0],$self)){if($this->definitions[$service]->class){$arguments=$this->autowireArguments($this->definitions[$service]->class,$entity[1],$arguments);}return$this->formatPhp('?->?(?*)',array($entity[0],$entity[1],$arguments),$self);}else{$arguments=$this->autowireArguments($entity[0],$entity[1],$arguments);return$this->formatPhp("$entity[0]::$entity[1](?*)",array($arguments),$self);}}function
 formatPhp($statement,$args,$self=NULL){$that=$this;array_walk_recursive($args,function(&$val)use($self,$that){list($val)=$that->normalizeEntity(array($val));if($val
 instanceof
 Statement){$val=new
@@ -4041,7 +4101,7 @@ setDefaultValue($value){$form=$this->getForm(FALSE);if(!$form||!$form->isAnchore
 loadHttpData(){$path=explode('[',strtr(str_replace(array('[]',']'),'',$this->getHtmlName()),'.','_'));$this->setValue(Nette\Utils\Arrays::get($this->getForm()->getHttpData(),$path,NULL));}function
 setDisabled($value=TRUE){$this->disabled=(bool)$value;return$this;}function
 isDisabled(){return$this->disabled;}function
-getControl(){$this->setOption('rendered',TRUE);$control=clone$this->control;$control->name=$this->getHtmlName();$control->disabled=$this->disabled;$control->id=$this->getHtmlId();$control->required=$this->isRequired();$rules=self::exportRules($this->rules);$rules=substr(json_encode($rules),1,-1);$rules=preg_replace('#"([a-z0-9_]+)":#i','$1:',$rules);$rules=preg_replace('#(?<!\\\\)"(?!:[^a-z])([^\\\\\',]*)"#i',"'$1'",$rules);$control->data('nette-rules',$rules?$rules:NULL);return$control;}function
+getControl(){$this->setOption('rendered',TRUE);$control=clone$this->control;$control->name=$this->getHtmlName();$control->disabled=$this->disabled;$control->id=$this->getHtmlId();$control->required=$this->isRequired();$rules=self::exportRules($this->rules);$rules=substr(PHP_VERSION_ID>=50400?json_encode($rules,JSON_UNESCAPED_UNICODE):json_encode($rules),1,-1);$rules=preg_replace('#"([a-z0-9_]+)":#i','$1:',$rules);$rules=preg_replace('#(?<!\\\\)"(?!:[^a-z])([^\\\\\',]*)"#i',"'$1'",$rules);$control->data('nette-rules',$rules?$rules:NULL);return$control;}function
 getLabel($caption=NULL){$label=clone$this->label;$label->for=$this->getHtmlId();if($caption!==NULL){$label->setText($this->translate($caption));}elseif($this->caption
 instanceof
 Html){$label->add($this->caption);}else{$label->setText($this->translate($this->caption));}return$label;}final
@@ -4064,7 +4124,8 @@ FALSE;}protected
 static
 function
 exportRules($rules){$payload=array();foreach($rules
-as$rule){if(!is_string($op=$rule->operation)){$op=callback($op);if(!$op->isStatic()){continue;}}if($rule->type===Rule::VALIDATOR){$item=array('op'=>($rule->isNegative?'~':'').$op,'msg'=>$rules->formatMessage($rule,FALSE));}elseif($rule->type===Rule::CONDITION){$item=array('op'=>($rule->isNegative?'~':'').$op,'rules'=>self::exportRules($rule->subRules),'control'=>$rule->control->getHtmlName());if($rule->subRules->getToggles()){$item['toggle']=$rule->subRules->getToggles();}}if(is_array($rule->arg)){foreach($rule->arg
+as$rule){if(!is_string($op=$rule->operation)){$op=new
+Nette\Callback($op);if(!$op->isStatic()){continue;}}if($rule->type===Rule::VALIDATOR){$item=array('op'=>($rule->isNegative?'~':'').$op,'msg'=>$rules->formatMessage($rule,FALSE));}elseif($rule->type===Rule::CONDITION){$item=array('op'=>($rule->isNegative?'~':'').$op,'rules'=>self::exportRules($rule->subRules),'control'=>$rule->control->getHtmlName());if($rule->subRules->getToggles()){$item['toggle']=$rule->subRules->getToggles();}}if(is_array($rule->arg)){foreach($rule->arg
 as$key=>$value){$item['arg'][$key]=$value
 instanceof
 IControl?(object)array('control'=>$value->getHtmlName()):$value;}}elseif($rule->arg!==NULL){$item['arg']=$rule->arg
@@ -4132,29 +4193,30 @@ SelectBox
 extends
 BaseControl{private$items=array();protected$allowed=array();private$prompt=FALSE;private$useKeys=TRUE;function
 __construct($label=NULL,array$items=NULL,$size=NULL){parent::__construct($label);$this->control->setName('select');$this->control->size=$size>1?(int)$size:NULL;if($items!==NULL){$this->setItems($items);}}function
-getValue(){$allowed=$this->allowed;if($this->prompt){$allowed=array_slice($allowed,1,count($allowed),TRUE);}return
-is_scalar($this->value)&&isset($allowed[$this->value])?$this->value:NULL;}function
+getValue(){return
+is_scalar($this->value)&&isset($this->allowed[$this->value])?$this->value:NULL;}function
 getRawValue(){return
 is_scalar($this->value)?$this->value:NULL;}function
 isFilled(){$value=$this->getValue();return
 is_array($value)?count($value)>0:$value!==NULL;}function
-setPrompt($prompt){$this->prompt=$prompt;if($prompt!==NULL&&!is_bool($prompt)){$this->items=array(''=>$prompt)+$this->items;$this->allowed=array(''=>'')+$this->allowed;}return$this;}function
+setPrompt($prompt){if($prompt===TRUE){$prompt=reset($this->items);unset($this->allowed[key($this->items)],$this->items[key($this->items)]);}$this->prompt=$prompt;return$this;}function
 skipFirst($v=NULL){trigger_error(__METHOD__.'() is deprecated; use setPrompt() instead.',E_USER_WARNING);return$this->setPrompt($v);}final
 function
 getPrompt(){return$this->prompt;}final
 function
 areKeysUsed(){return$this->useKeys;}function
-setItems(array$items,$useKeys=TRUE){$this->items=$items;if($this->prompt){$this->items=array(''=>is_bool($this->prompt)?$this->items['']:$this->prompt)+$this->items;}$this->allowed=$this->prompt?array(''=>''):array();$this->useKeys=(bool)$useKeys;foreach($items
-as$key=>$value){if(!is_array($value)){$value=array($key=>$value);}foreach($value
-as$key2=>$value2){if(!$this->useKeys){if(!is_scalar($value2)){throw
+setItems(array$items,$useKeys=TRUE){$allowed=array();foreach($items
+as$k=>$v){foreach((is_array($v)?$v:array($k=>$v))as$key=>$value){if(!$useKeys){if(!is_scalar($value)){throw
 new
-Nette\InvalidArgumentException("All items must be scalar.");}$key2=$value2;}if(isset($this->allowed[$key2])){throw
+Nette\InvalidArgumentException("All items must be scalar.");}$key=$value;}if(isset($allowed[$key])){throw
 new
-Nette\InvalidArgumentException("Items contain duplication for key '$key2'.");}$this->allowed[$key2]=$value2;}}return$this;}final
+Nette\InvalidArgumentException("Items contain duplication for key '$key'.");}$allowed[$key]=$value;}}$this->items=$items;$this->allowed=$allowed;$this->useKeys=(bool)$useKeys;return$this;}final
 function
 getItems(){return$this->items;}function
-getSelectedItem(){if(!$this->useKeys){return$this->getValue();}else{$value=$this->getValue();return$value===NULL?NULL:$this->allowed[$value];}}function
-getControl(){$control=parent::getControl();if($this->prompt){reset($this->items);$control->data('nette-empty-value',$this->useKeys?key($this->items):current($this->items));}$selected=$this->getValue();$selected=is_array($selected)?array_flip($selected):array($selected=>TRUE);$option=Nette\Utils\Html::el('option');foreach($this->items
+getSelectedItem(){$value=$this->getValue();return($this->useKeys&&$value!==NULL)?$this->allowed[$value]:$value;}function
+getControl(){$selected=$this->getValue();$selected=is_array($selected)?array_flip($selected):array($selected=>TRUE);$control=parent::getControl();$option=Nette\Utils\Html::el('option');if($this->prompt!==FALSE){$control->add($this->prompt
+instanceof
+Nette\Utils\Html?$this->prompt->value(''):(string)$option->value('')->setText($this->translate((string)$this->prompt)));}foreach($this->items
 as$key=>$value){if(!is_array($value)){$value=array($key=>$value);$dest=$control;}else{$dest=$control->create('optgroup')->label($this->translate($key));}foreach($value
 as$key2=>$value2){if($value2
 instanceof
@@ -4162,14 +4224,16 @@ Nette\Utils\Html){$dest->add((string)$value2->selected(isset($selected[$key2])))
 MultiSelectBox
 extends
 SelectBox{function
-getValue(){$allowed=array_keys($this->allowed);if($this->getPrompt()){unset($allowed[0]);}return
-array_intersect($this->getRawValue(),$allowed);}function
-getRawValue(){if(is_scalar($this->value)){$value=array($this->value);}elseif(!is_array($this->value)){$value=array();}else{$value=$this->value;}$res=array();foreach($value
-as$val){if(is_scalar($val)){$res[]=$val;}}return$res;}function
-getSelectedItem(){if(!$this->areKeysUsed()){return$this->getValue();}else{$res=array();foreach($this->getValue()as$value){$res[$value]=$this->allowed[$value];}return$res;}}function
+getValue(){return
+array_intersect($this->getRawValue(),array_keys($this->allowed));}function
+getRawValue(){if(is_scalar($this->value)){return
+array($this->value);}else{$res=array();foreach((array)$this->value
+as$val){if(is_scalar($val)){$res[]=$val;}}return$res;}}function
+getSelectedItem(){return$this->areKeysUsed()?array_intersect_key($this->allowed,array_flip($this->getValue())):$this->getValue();}function
 getHtmlName(){return
 parent::getHtmlName().'[]';}function
-getControl(){$control=parent::getControl();$control->multiple=TRUE;return$control;}static
+getControl(){return
+parent::getControl()->multiple(TRUE);}static
 function
 validateLength(MultiSelectBox$control,$range){if(!is_array($range)){$range=array($range,$range);}$count=count($control->getSelectedItem());return($range[0]===NULL||$count>=$range[0])&&($range[1]===NULL||$count<=$range[1]);}}class
 RadioList
@@ -4205,9 +4269,10 @@ as$filter){$value=(string)$filter($value);}return$value===$this->translate($this
 setEmptyValue($value){$this->emptyValue=(string)$value;return$this;}final
 function
 getEmptyValue(){return$this->emptyValue;}function
-addFilter($filter){$this->filters[]=callback($filter);return$this;}function
+addFilter($filter){$this->filters[]=new
+Nette\Callback($filter);return$this;}function
 getControl(){$control=parent::getControl();foreach($this->getRules()as$rule){if($rule->type===Nette\Forms\Rule::VALIDATOR&&!$rule->isNegative&&($rule->operation===Form::LENGTH||$rule->operation===Form::MAX_LENGTH)){$control->maxlength=is_array($rule->arg)?$rule->arg[1]:$rule->arg;}}if($this->emptyValue!==''){$control->data('nette-empty-value',$this->translate($this->emptyValue));}return$control;}function
-addRule($operation,$message=NULL,$arg=NULL){if($operation===Form::FLOAT){$this->addFilter(callback(__CLASS__,'filterFloat'));}return
+addRule($operation,$message=NULL,$arg=NULL){if($operation===Form::FLOAT){$this->addFilter(array(__CLASS__,'filterFloat'));}return
 parent::addRule($operation,$message,$arg);}static
 function
 validateMinLength(TextBase$control,$length){return
@@ -4248,7 +4313,7 @@ getControl(){$control=parent::getControl();$control->setText($this->getValue()==
 TextInput
 extends
 TextBase{function
-__construct($label=NULL,$cols=NULL,$maxLength=NULL){parent::__construct($label);$this->control->type='text';$this->control->size=$cols;$this->control->maxlength=$maxLength;$this->filters[]=callback($this,'sanitize');$this->value='';}function
+__construct($label=NULL,$cols=NULL,$maxLength=NULL){parent::__construct($label);$this->control->type='text';$this->control->size=$cols;$this->control->maxlength=$maxLength;$this->addFilter($this->sanitize);$this->value='';}function
 sanitize($value){if($this->control->maxlength&&Nette\Utils\Strings::length($value)>$this->control->maxlength){$value=Nette\Utils\Strings::substring($value,0,$this->control->maxlength);}return
 Nette\Utils\Strings::trim(strtr($value,"\r\n",'  '));}function
 setType($type){$this->control->type=$type;return$this;}function
@@ -4400,8 +4465,10 @@ new
 Nette\InvalidArgumentException("Unknown operation$operation for control '{$rule->control->name}'.");}}private
 function
 getCallback($rule){$op=$rule->operation;if(is_string($op)&&strncmp($op,':',1)===0){return
-callback(get_class($rule->control),self::VALIDATE_PREFIX.ltrim($op,':'));}else{return
-callback($op);}}static
+new
+Nette\Callback(get_class($rule->control),self::VALIDATE_PREFIX.ltrim($op,':'));}else{return
+new
+Nette\Callback($op);}}static
 function
 formatMessage($rule,$withValue){$message=$rule->message;if($message
 instanceof
@@ -4527,7 +4594,7 @@ __destruct(){if(self::$fixIE&&isset($_SERVER['HTTP_USER_AGENT'])&&strpos($_SERVE
 Nette\Utils\Strings::random(2e3," \t\r\n");self::$fixIE=FALSE;}}function
 setCookie($name,$value,$time,$path=NULL,$domain=NULL,$secure=NULL,$httpOnly=NULL){if(headers_sent($file,$line)){throw
 new
-Nette\InvalidStateException("Cannot set cookie after HTTP headers have been sent".($file?" (output started at $file:$line).":"."));}setcookie($name,$value,$time?Nette\DateTime::from($time)->format('U'):0,$path===NULL?$this->cookiePath:(string)$path,$domain===NULL?$this->cookieDomain:(string)$domain,$secure===NULL?$this->cookieSecure:(bool)$secure,$httpOnly===NULL?$this->cookieHttpOnly:(bool)$httpOnly);$flatten=array();foreach(headers_list()as$header){if(preg_match('#^Set-Cookie: .+?=#',$header,$m)){$flatten[$m[0]]=$header;if(PHP_VERSION_ID<50300){header('Set-Cookie:');}else{header_remove('Set-Cookie');}}}foreach(array_values($flatten)as$key=>$header){header($header,$key===0);}return$this;}function
+Nette\InvalidStateException("Cannot set cookie after HTTP headers have been sent".($file?" (output started at $file:$line).":"."));}setcookie($name,$value,$time?Nette\DateTime::from($time)->format('U'):0,$path===NULL?$this->cookiePath:(string)$path,$domain===NULL?$this->cookieDomain:(string)$domain,$secure===NULL?$this->cookieSecure:(bool)$secure,$httpOnly===NULL?$this->cookieHttpOnly:(bool)$httpOnly);if(ini_get('suhosin.cookie.encrypt')){return$this;}$flatten=array();foreach(headers_list()as$header){if(preg_match('#^Set-Cookie: .+?=#',$header,$m)){$flatten[$m[0]]=$header;if(PHP_VERSION_ID<50300){header('Set-Cookie:');}else{header_remove('Set-Cookie');}}}foreach(array_values($flatten)as$key=>$header){header($header,$key===0);}return$this;}function
 deleteCookie($name,$path=NULL,$domain=NULL,$secure=NULL){$this->setCookie($name,FALSE,0,$path,$domain,$secure);}}class
 Session
 extends
@@ -4725,7 +4792,8 @@ Nette\ObjectMixin::has($this,$name);}function
 __unset($name){Nette\ObjectMixin::remove($this,$name);}}class
 Filter
 extends\FilterIterator{private$callback;function
-__construct(\Iterator$iterator,$callback){parent::__construct($iterator);$this->callback=callback($callback);}function
+__construct(\Iterator$iterator,$callback){parent::__construct($iterator);$this->callback=new
+Nette\Callback($callback);}function
 accept(){return$this->callback->invoke($this);}}class
 InstanceFilter
 extends\FilterIterator
@@ -4736,12 +4804,15 @@ count(){return
 iterator_count($this);}}class
 Mapper
 extends\IteratorIterator{private$callback;function
-__construct(\Traversable$iterator,$callback){parent::__construct($iterator);$this->callback=callback($callback);}function
+__construct(\Traversable$iterator,$callback){parent::__construct($iterator);$this->callback=new
+Nette\Callback($callback);}function
 current(){return$this->callback->invoke(parent::current(),parent::key());}}class
 RecursiveFilter
 extends\FilterIterator
 implements\RecursiveIterator{private$callback;private$childrenCallback;function
-__construct(\RecursiveIterator$iterator,$callback,$childrenCallback=NULL){parent::__construct($iterator);$this->callback=$callback===NULL?NULL:callback($callback);$this->childrenCallback=$childrenCallback===NULL?NULL:callback($childrenCallback);}function
+__construct(\RecursiveIterator$iterator,$callback,$childrenCallback=NULL){parent::__construct($iterator);$this->callback=$callback===NULL?NULL:new
+Nette\Callback($callback);$this->childrenCallback=$childrenCallback===NULL?NULL:new
+Nette\Callback($childrenCallback);}function
 accept(){return$this->callback===NULL||$this->callback->invoke($this);}function
 hasChildren(){return$this->getInnerIterator()->hasChildren()&&($this->childrenCallback===NULL||$this->childrenCallback->invoke($this));}function
 getChildren(){return
@@ -4792,7 +4863,9 @@ HtmlNode($token->name);$htmlNode->isEmpty=in_array($this->contentType,array(self
 function
 processHtmlTagEnd(Token$token){if($token->text==='-->'){$this->output.=$token->text;$this->setContext(NULL);return;}$htmlNode=end($this->htmlNodes);$isEmpty=!$htmlNode->closing&&(Strings::contains($token->text,'/')||$htmlNode->isEmpty);if($isEmpty&&in_array($this->contentType,array(self::CONTENT_HTML,self::CONTENT_XHTML))){$token->text=preg_replace('#^.*>#',$this->contentType===self::CONTENT_XHTML?' />':'>',$token->text);}if(empty($htmlNode->macroAttrs)){$this->output.=$token->text;}else{$code=substr($this->output,$htmlNode->offset).$token->text;$this->output=substr($this->output,0,$htmlNode->offset);$this->writeAttrsMacro($code,$htmlNode);if($isEmpty){$htmlNode->closing=TRUE;$this->writeAttrsMacro('',$htmlNode);}}if($isEmpty){$htmlNode->closing=TRUE;}if(!$htmlNode->closing&&(strcasecmp($htmlNode->name,'script')===0||strcasecmp($htmlNode->name,'style')===0)){$this->setContext(strcasecmp($htmlNode->name,'style')?self::CONTENT_JS:self::CONTENT_CSS);}else{$this->setContext(NULL);if($htmlNode->closing){array_pop($this->htmlNodes);}}}private
 function
-processHtmlAttribute(Token$token){$htmlNode=end($this->htmlNodes);if(Strings::startsWith($token->name,Parser::N_PREFIX)){$htmlNode->macroAttrs[substr($token->name,strlen(Parser::N_PREFIX))]=$token->value;}else{$htmlNode->attrs[$token->name]=TRUE;$this->output.=$token->text;if($token->value){$context=NULL;if(strncasecmp($token->name,'on',2)===0){$context=self::CONTENT_JS;}elseif($token->name==='style'){$context=self::CONTENT_CSS;}$this->setContext($token->value,$context);}}}private
+processHtmlAttribute(Token$token){$htmlNode=end($this->htmlNodes);if(Strings::startsWith($token->name,Parser::N_PREFIX)){$name=substr($token->name,strlen(Parser::N_PREFIX));if(isset($htmlNode->macroAttrs[$name])){throw
+new
+CompileException("Found multiple macro-attributes $token->name.",0,$token->line);}$htmlNode->macroAttrs[$name]=$token->value;}else{$htmlNode->attrs[$token->name]=TRUE;$this->output.=$token->text;if($token->value){$context=NULL;if(strncasecmp($token->name,'on',2)===0){$context=self::CONTENT_JS;}elseif($token->name==='style'){$context=self::CONTENT_CSS;}$this->setContext($token->value,$context);}}}private
 function
 processComment(Token$token){$isLeftmost=trim(substr($this->output,strrpos("\n$this->output","\n")))==='';if(!$isLeftmost){$this->output.=substr($token->text,strlen(rtrim($token->text,"\n")));}}function
 writeMacro($name,$args=NULL,$modifiers=NULL,$isRightmost=FALSE,HtmlNode$htmlNode=NULL,$prefix=NULL){if($name[0]==='/'){$node=end($this->macroNodes);if(!$node||("/$node->name"!==$name&&'/'!==$name)||$modifiers||($args&&$node->args&&!Strings::startsWith("$node->args ","$args "))){$name.=$args?' ':'';throw
@@ -4879,7 +4952,7 @@ nodeOpened(MacroNode$node){if($this->macros[$node->name][2]&&$node->htmlNode){$n
 nodeClosed(MacroNode$node){$res=$this->compile($node,$this->macros[$node->name][1]);if(!$node->closingCode){$node->closingCode="<?php $res ?>";}}private
 function
 compile(MacroNode$node,$def){$node->tokenizer->reset();$writer=Latte\PhpWriter::using($node,$this->compiler);if(is_string($def)){return$writer->write($def);}else{return
-callback($def)->invoke($node,$writer);}}function
+Nette\Callback::create($def)->invoke($node,$writer);}}function
 getCompiler(){return$this->compiler;}}use
 Nette\Latte\CompileException;use
 Nette\Latte\PhpWriter;class
@@ -4900,7 +4973,7 @@ new
 CompileException("Macro {if} supports only one {else}.");}$ifNode->data->else=TRUE;return'ob_start()';}return'else:';}function
 macroTranslate(MacroNode$node,PhpWriter$writer){if($node->closing){return$writer->write('echo %modify($template->translate(ob_get_clean()))');}elseif($node->isEmpty=($node->args!=='')){return$writer->write('echo %modify($template->translate(%node.args))');}else{return'ob_start()';}}function
 macroInclude(MacroNode$node,PhpWriter$writer){$code=$writer->write('Nette\Latte\Macros\CoreMacros::includeTemplate(%node.word, %node.array? + $template->getParameters(), $_l->templates[%var])',$this->getCompiler()->getTemplateId());if($node->modifiers){return$writer->write('echo %modify(%raw->__toString(TRUE))',$code);}else{return$code.'->render()';}}function
-macroUse(MacroNode$node,PhpWriter$writer){callback($node->tokenizer->fetchWord(),'install')->invoke($this->getCompiler())->initialize();}function
+macroUse(MacroNode$node,PhpWriter$writer){Nette\Callback::create($node->tokenizer->fetchWord(),'install')->invoke($this->getCompiler())->initialize();}function
 macroCapture(MacroNode$node,PhpWriter$writer){$variable=$node->tokenizer->fetchWord();if(substr($variable,0,1)!=='$'){throw
 new
 CompileException("Invalid capture block variable '$variable'");}$node->data->variable=$variable;return'ob_start()';}function
@@ -4945,8 +5018,7 @@ function
 renderFormEnd(Form$form){$s='';if(strcasecmp($form->getMethod(),'get')===0){$url=explode('?',$form->getElementPrototype()->action,2);if(isset($url[1])){foreach(preg_split('#[;&]#',$url[1])as$param){$parts=explode('=',$param,2);$name=urldecode($parts[0]);if(!isset($form[$name])){$s.=Nette\Utils\Html::el('input',array('type'=>'hidden','name'=>$name,'value'=>urldecode($parts[1])));}}}}foreach($form->getComponents(TRUE,'Nette\Forms\Controls\HiddenField')as$control){if(!$control->getOption('rendered')){$s.=$control->getControl();}}if(iterator_count($form->getComponents(TRUE,'Nette\Forms\Controls\TextInput'))<2){$s.='<!--[if IE]><input type=IEbug disabled style="display:none"><![endif]-->';}echo($s?"<div>$s</div>\n":'').$form->getElementPrototype()->endTag()."\n";}}class
 UIMacros
 extends
-MacroSet{const
-RE_IDENTIFIER='[_a-zA-Z\x7F-\xFF][_a-zA-Z0-9\x7F-\xFF]*';private$namedBlocks=array();private$extends;static
+MacroSet{private$namedBlocks=array();private$extends;static
 function
 install(Latte\Compiler$compiler){$me=new
 static($compiler);$me->addMacro('include',array($me,'macroInclude'));$me->addMacro('includeblock',array($me,'macroIncludeBlock'));$me->addMacro('extends',array($me,'macroExtends'));$me->addMacro('layout',array($me,'macroExtends'));$me->addMacro('block',array($me,'macroBlock'),array($me,'macroBlockEnd'));$me->addMacro('define',array($me,'macroBlock'),array($me,'macroBlockEnd'));$me->addMacro('snippet',array($me,'macroBlock'),array($me,'macroBlockEnd'));$me->addMacro('ifset',array($me,'macroIfset'),'endif');$me->addMacro('widget',array($me,'macroControl'));$me->addMacro('control',array($me,'macroControl'));$me->addMacro('href',NULL,NULL,function(MacroNode$node,PhpWriter$writer)use($me){return' ?> href="<?php '.$me->macroLink($node,$writer).' ?>"<?php ';});$me->addMacro('plink',array($me,'macroLink'));$me->addMacro('link',array($me,'macroLink'));$me->addMacro('ifCurrent',array($me,'macroIfCurrent'),'endif');$me->addMacro('contentType',array($me,'macroContentType'));$me->addMacro('status',array($me,'macroStatus'));}function
@@ -4965,11 +5037,9 @@ if (!empty($_control->snippetMode)) {
 }';}return
 array(implode("\n\n",$prolog),implode("\n",$epilog));}function
 macroInclude(MacroNode$node,PhpWriter$writer){$destination=$node->tokenizer->fetchWord();if(substr($destination,0,1)!=='#'){return
-FALSE;}$destination=ltrim($destination,'#');if(!Strings::match($destination,'#^\$?'.self::RE_IDENTIFIER.'$#')){throw
+FALSE;}$destination=ltrim($destination,'#');$parent=$destination==='parent';if($destination==='parent'||$destination==='this'){for($item=$node->parentNode;$item&&$item->name!=='block'&&!isset($item->data->name);$item=$item->parentNode);if(!$item){throw
 new
-CompileException("Included block name must be alphanumeric string, '$destination' given.");}$parent=$destination==='parent';if($destination==='parent'||$destination==='this'){for($item=$node->parentNode;$item&&$item->name!=='block'&&!isset($item->data->name);$item=$item->parentNode);if(!$item){throw
-new
-CompileException("Cannot include $destination block outside of any block.");}$destination=$item->data->name;}$name=$destination[0]==='$'?$destination:var_export($destination,TRUE);if(isset($this->namedBlocks[$destination])&&!$parent){$cmd="call_user_func(reset(\$_l->blocks[$name]), \$_l, %node.array? + get_defined_vars())";}else{$cmd='Nette\Latte\Macros\UIMacros::callBlock'.($parent?'Parent':'')."(\$_l, $name, %node.array? + ".($parent?'get_defined_vars':'$template->getParameters').'())';}if($node->modifiers){return$writer->write("ob_start(); $cmd; echo %modify(ob_get_clean())");}else{return$writer->write($cmd);}}function
+CompileException("Cannot include $destination block outside of any block.");}$destination=$item->data->name;}$name=Strings::contains($destination,'$')?$destination:var_export($destination,TRUE);if(isset($this->namedBlocks[$destination])&&!$parent){$cmd="call_user_func(reset(\$_l->blocks[$name]), \$_l, %node.array? + get_defined_vars())";}else{$cmd='Nette\Latte\Macros\UIMacros::callBlock'.($parent?'Parent':'')."(\$_l, $name, %node.array? + ".($parent?'get_defined_vars':'$template->getParameters').'())';}if($node->modifiers){return$writer->write("ob_start(); $cmd; echo %modify(ob_get_clean())");}else{return$writer->write($cmd);}}function
 macroIncludeBlock(MacroNode$node,PhpWriter$writer){return$writer->write('Nette\Latte\Macros\CoreMacros::includeTemplate(%node.word, %node.array? + get_defined_vars(), $_l->templates[%var])->render()',$this->getCompiler()->getTemplateId());}function
 macroExtends(MacroNode$node,PhpWriter$writer){if(!$node->args){throw
 new
@@ -4980,9 +5050,9 @@ new
 CompileException("Multiple {extends} declarations are not allowed.");}if($node->args==='none'){$this->extends='FALSE';}elseif($node->args==='auto'){$this->extends='$_presenter->findLayoutTemplateFile()';}else{$this->extends=$writer->write('%node.word%node.args');}return;}function
 macroBlock(MacroNode$node,PhpWriter$writer){$name=$node->tokenizer->fetchWord();if($node->name==='block'&&$name===FALSE){return$node->modifiers===''?'':'ob_start()';}$node->data->name=$name=ltrim($name,'#');if($name==NULL){if($node->name!=='snippet'){throw
 new
-CompileException("Missing block name.");}}elseif(!Strings::match($name,'#^'.self::RE_IDENTIFIER.'$#')){if($node->name==='snippet'){for($parent=$node->parentNode;$parent&&$parent->name!=='snippet';$parent=$parent->parentNode);if(!$parent){throw
+CompileException("Missing block name.");}}elseif(Strings::contains($name,'$')){if($node->name==='snippet'){for($parent=$node->parentNode;$parent&&$parent->name!=='snippet';$parent=$parent->parentNode);if(!$parent){throw
 new
-CompileException("Dynamic snippets are allowed only inside static snippet.");}$parent->data->dynamic=TRUE;$node->data->leave=TRUE;$node->closingCode="<?php \$_dynSnippets[\$_dynSnippetId] = ob_get_flush() ?>";if($node->htmlNode){$node->attrCode=$writer->write("<?php echo ' id=\"' . (\$_dynSnippetId = \$_control->getSnippetId({$writer->formatWord($name)})) . '\"' ?>");return$writer->write('ob_start()');}$tag=trim($node->tokenizer->fetchWord(),'<>');$tag=$tag?$tag:'div';$node->closingCode.="\n</$tag>";return$writer->write("?>\n<$tag id=\"<?php echo \$_dynSnippetId = \$_control->getSnippetId({$writer->formatWord($name)}) ?>\"><?php ob_start()");}else{$node->data->leave=TRUE;$fname=$writer->formatWord($name);$node->closingCode="<?php }} call_user_func(reset(\$_l->blocks[$fname]), \$_l, get_defined_vars()) ?>";$func='_lb'.substr(md5($this->getCompiler()->getTemplateId().$name),0,10).'_'.preg_replace('#[^a-z0-9_]#i','_',$name);return"//\n// block $name\n//\n"."if (!function_exists(\$_l->blocks[$fname][] = '$func')) { "."function $func(\$_l, \$_args) { ".(PHP_VERSION_ID>50208?'extract($_args)':'foreach ($_args as $__k => $__v) $$__k = $__v');}}if($node->name==='snippet'){$node->data->name=$name='_'.$name;}if(isset($this->namedBlocks[$name])){throw
+CompileException("Dynamic snippets are allowed only inside static snippet.");}$parent->data->dynamic=TRUE;$node->data->leave=TRUE;$node->closingCode="<?php \$_dynSnippets[\$_dynSnippetId] = ob_get_flush() ?>";if($node->htmlNode){$node->attrCode=$writer->write("<?php echo ' id=\"' . (\$_dynSnippetId = \$_control->getSnippetId({$writer->formatWord($name)})) . '\"' ?>");return$writer->write('ob_start()');}$tag=trim($node->tokenizer->fetchWord(),'<>');$tag=$tag?$tag:'div';$node->closingCode.="\n</$tag>";return$writer->write("?>\n<$tag id=\"<?php echo \$_dynSnippetId = \$_control->getSnippetId({$writer->formatWord($name)}) ?>\"><?php ob_start()");}else{$node->data->leave=TRUE;$fname=$writer->formatWord($name);$node->closingCode="<?php }} ".($node->name==='define'?'':"call_user_func(reset(\$_l->blocks[$fname]), \$_l, get_defined_vars())")." ?>";$func='_lb'.substr(md5($this->getCompiler()->getTemplateId().$name),0,10).'_'.preg_replace('#[^a-z0-9_]#i','_',$name);return"\n\n//\n// block $name\n//\n"."if (!function_exists(\$_l->blocks[$fname]['{$this->getCompiler()->getTemplateId()}'] = '$func')) { "."function $func(\$_l, \$_args) { ".(PHP_VERSION_ID>50208?'extract($_args)':'foreach ($_args as $__k => $__v) $$__k = $__v');}}if($node->name==='snippet'){$node->data->name=$name='_'.$name;}if(isset($this->namedBlocks[$name])){throw
 new
 CompileException("Cannot redeclare static block '$name'");}$prolog=$this->namedBlocks?'':"if (\$_l->extends) { ob_end_clean(); return Nette\\Latte\\Macros\\CoreMacros::includeTemplate(\$_l->extends, get_defined_vars(), \$template)->render(); }\n";$top=empty($node->parentNode);$this->namedBlocks[$name]=TRUE;$include='call_user_func(reset($_l->blocks[%var]), $_l, '.($node->name==='snippet'?'$template->getParameters()':'get_defined_vars()').')';if($node->modifiers){$include="ob_start(); $include; echo %modify(ob_get_clean())";}if($node->name==='snippet'){if($node->htmlNode){$node->attrCode=$writer->write('<?php echo \' id="\' . $_control->getSnippetId(%var) . \'"\' ?>',(string)substr($name,1));return$writer->write($prolog.$include,$name);}$tag=trim($node->tokenizer->fetchWord(),'<>');$tag=$tag?$tag:'div';return$writer->write("$prolog ?>\n<$tag id=\"<?php echo \$_control->getSnippetId(%var) ?>\"><?php $include ?>\n</$tag><?php ",(string)substr($name,1),$name);}elseif($node->name==='define'){return$prolog;}else{return$writer->write($prolog.$include,$name);}}function
 macroBlockEnd(MacroNode$node,PhpWriter$writer){if(isset($node->data->name)){if($node->name==='snippet'&&$node->htmlNode&&!$node->prefix&&preg_match("#^.*? n:\w+>\n?#s",$node->content,$m1)&&preg_match("#[ \t]*<[^<]+$#sD",$node->content,$m2)){$node->openingCode=$m1[0].$node->openingCode;$node->content=substr($node->content,strlen($m1[0]),-strlen($m2[0]));$node->closingCode.=$m2[0];}if(empty($node->data->leave)){if(!empty($node->data->dynamic)){$node->content.='<?php if (isset($_dynSnippets)) return $_dynSnippets; ?>';}$this->namedBlocks[$node->data->name]=$tmp=rtrim(ltrim($node->content,"\n")," \t");$node->content=substr_replace($node->content,$node->openingCode."\n",strspn($node->content,"\n"),strlen($tmp));$node->openingCode="<?php ?>";}}elseif($node->modifiers){return$writer->write('echo %modify(ob_get_clean())');}}function
@@ -4990,7 +5060,7 @@ macroIfset(MacroNode$node,PhpWriter$writer){if(!Strings::contains($node->args,'#
 FALSE;}$list=array();while(($name=$node->tokenizer->fetchWord())!==FALSE){$list[]=$name[0]==='#'?'$_l->blocks["'.substr($name,1).'"]':$name;}return'if (isset('.implode(', ',$list).')):';}function
 macroControl(MacroNode$node,PhpWriter$writer){$pair=$node->tokenizer->fetchWord();if($pair===FALSE){throw
 new
-CompileException("Missing control name in {control}");}$pair=explode(':',$pair,2);$name=$writer->formatWord($pair[0]);$method=isset($pair[1])?ucfirst($pair[1]):'';$method=Strings::match($method,'#^('.self::RE_IDENTIFIER.'|)$#')?"render$method":"{\"render$method\"}";$param=$writer->formatArray();if(!Strings::contains($node->args,'=>')){$param=substr($param,6,-1);}return($name[0]==='$'?"if (is_object($name)) \$_ctrl = $name; else ":'').'$_ctrl = $_control->getComponent('.$name.'); '.'if ($_ctrl instanceof Nette\Application\UI\IRenderable) $_ctrl->validateControl(); '."\$_ctrl->$method($param)";}function
+CompileException("Missing control name in {control}");}$pair=explode(':',$pair,2);$name=$writer->formatWord($pair[0]);$method=isset($pair[1])?ucfirst($pair[1]):'';$method=Strings::match($method,'#^\w*$#')?"render$method":"{\"render$method\"}";$param=$writer->formatArray();if(!Strings::contains($node->args,'=>')){$param=substr($param,6,-1);}return($name[0]==='$'?"if (is_object($name)) \$_ctrl = $name; else ":'').'$_ctrl = $_control->getComponent('.$name.'); '.'if ($_ctrl instanceof Nette\Application\UI\IRenderable) $_ctrl->validateControl(); '."\$_ctrl->$method($param)";}function
 macroLink(MacroNode$node,PhpWriter$writer){return$writer->write('echo %escape(%modify('.($node->name==='plink'?'$_presenter':'$_control').'->link(%node.word, %node.array?)))');}function
 macroIfCurrent(MacroNode$node,PhpWriter$writer){return$writer->write(($node->args?'try { $_presenter->link(%node.word, %node.array?); } catch (Nette\Application\UI\InvalidLinkException $e) {}':'').'; if ($_presenter->getLastCreatedRequestFlag("current")):');}function
 macroContentType(MacroNode$node,PhpWriter$writer){if(Strings::contains($node->args,'xhtml')){$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_XHTML);}elseif(Strings::contains($node->args,'html')){$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_HTML);}elseif(Strings::contains($node->args,'xml')){$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_XML);}elseif(Strings::contains($node->args,'javascript')){$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_JS);}elseif(Strings::contains($node->args,'css')){$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_CSS);}elseif(Strings::contains($node->args,'calendar')){$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_ICAL);}else{$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_TEXT);}if(Strings::contains($node->args,'/')){return$writer->write('$netteHttpResponse->setHeader("Content-Type", %var)',$node->args);}}function
@@ -5059,7 +5129,7 @@ N_PREFIX='n:';public$defaultSyntax='latte';public$syntaxes=array('latte'=>array(
 CONTEXT_TEXT='text',CONTEXT_CDATA='cdata',CONTEXT_TAG='tag',CONTEXT_ATTRIBUTE='attribute',CONTEXT_NONE='none',CONTEXT_COMMENT='comment';function
 parse($input){if(substr($input,0,3)==="\xEF\xBB\xBF"){$input=substr($input,3);}if(!Strings::checkEncoding($input)){throw
 new
-Nette\InvalidArgumentException('Template is not valid UTF-8 stream.');}$input=str_replace("\r\n","\n",$input);$this->input=$input;$this->output=array();$this->offset=0;$this->setSyntax($this->defaultSyntax);$this->setContext(self::CONTEXT_TEXT);$this->lastHtmlTag=$this->syntaxEndTag=NULL;$this->xmlMode=(bool)preg_match('#^<\?xml\s#m',$input);while($this->offset<strlen($input)){$matches=$this->{"context".$this->context[0]}();if(!$matches){break;}elseif(!empty($matches['comment'])){$this->addToken(Token::COMMENT,$matches[0]);}elseif(!empty($matches['macro'])){$token=$this->addToken(Token::MACRO_TAG,$matches[0]);list($token->name,$token->value,$token->modifiers)=$this->parseMacroTag($matches['macro']);}$this->filter();}if($this->offset<strlen($input)){$this->addToken(Token::TEXT,substr($this->input,$this->offset));}return$this->output;}private
+Nette\InvalidArgumentException('Template is not valid UTF-8 stream.');}$input=str_replace("\r\n","\n",$input);$this->input=$input;$this->output=array();$this->offset=0;$this->setSyntax($this->defaultSyntax);$this->setContext(self::CONTEXT_TEXT);$this->lastHtmlTag=$this->syntaxEndTag=NULL;while($this->offset<strlen($input)){$matches=$this->{"context".$this->context[0]}();if(!$matches){break;}elseif(!empty($matches['comment'])){$this->addToken(Token::COMMENT,$matches[0]);}elseif(!empty($matches['macro'])){$token=$this->addToken(Token::MACRO_TAG,$matches[0]);list($token->name,$token->value,$token->modifiers)=$this->parseMacroTag($matches['macro']);}$this->filter();}if($this->offset<strlen($input)){$this->addToken(Token::TEXT,substr($this->input,$this->offset));}return$this->output;}private
 function
 contextText(){$matches=$this->match('~
 			(?:(?<=\n|^)[ \t]*)?<(?P<closing>/?)(?P<tag>[a-z0-9:]+)|  ##  begin of HTML tag <tag </tag - ignores <!DOCTYPE
@@ -5167,9 +5237,11 @@ RETRY_LIMIT=3;public$scanDirs=array();public$ignoreDirs='.*, *.old, *.bak, *.tmp
 __construct(){if(!extension_loaded('tokenizer')){throw
 new
 Nette\NotSupportedException("PHP extension Tokenizer is not loaded.");}}function
-register(){$this->list=$this->getCache()->load($this->getKey(),callback($this,'_rebuildCallback'));parent::register();return$this;}function
+register(){$this->list=$this->getCache()->load($this->getKey(),new
+Nette\Callback($this,'_rebuildCallback'));parent::register();return$this;}function
 tryLoad($type){$type=ltrim(strtolower($type),'\\');$info=&$this->list[$type];if($this->autoRebuild&&empty($this->checked[$type])&&(is_array($info)?!is_file($info[0]):$info<self::RETRY_LIMIT)){$info=is_int($info)?$info+1:0;$this->checked[$type]=TRUE;if($this->rebuilt){$this->getCache()->save($this->getKey(),$this->list,array(Cache::CONSTS=>'Nette\Framework::REVISION'));}else{$this->rebuild();}}if(isset($info[0])){Nette\Utils\LimitedScope::load($info[0],TRUE);if($this->autoRebuild&&!class_exists($type,FALSE)&&!interface_exists($type,FALSE)&&(PHP_VERSION_ID<50400||!trait_exists($type,FALSE))){$info=0;$this->checked[$type]=TRUE;if($this->rebuilt){$this->getCache()->save($this->getKey(),$this->list,array(Cache::CONSTS=>'Nette\Framework::REVISION'));}else{$this->rebuild();}}self::$count++;}}function
-rebuild(){$this->getCache()->save($this->getKey(),callback($this,'_rebuildCallback'));$this->rebuilt=TRUE;}function
+rebuild(){$this->getCache()->save($this->getKey(),new
+Nette\Callback($this,'_rebuildCallback'));$this->rebuilt=TRUE;}function
 _rebuildCallback(&$dp){foreach($this->list
 as$pair){if(is_array($pair)){$this->files[$pair[0]]=$pair[1];}}foreach(array_unique($this->scanDirs)as$dir){$this->scanDirectory($dir);}$this->files=NULL;$dp=array(Cache::CONSTS=>'Nette\Framework::REVISION');return$this->list;}function
 getIndexedClasses(){$res=array();foreach($this->list
@@ -5476,7 +5548,7 @@ new
 static(is_object($class)?get_class($class):$class,$method);}function
 toCallback(){return
 new
-Nette\Callback(array(parent::getDeclaringClass()->getName(),$this->getName()));}function
+Nette\Callback(parent::getDeclaringClass()->getName(),$this->getName());}function
 __toString(){return'Method '.parent::getDeclaringClass()->getName().'::'.$this->getName().'()';}function
 getDeclaringClass(){return
 new
@@ -5661,7 +5733,8 @@ removeDeny($roles=self::ALL,$resources=self::ALL,$privileges=self::ALL){$this->s
 function
 setRule($toAdd,$type,$roles,$resources,$privileges,$assertion=NULL){if($roles===self::ALL){$roles=array(self::ALL);}else{if(!is_array($roles)){$roles=array($roles);}foreach($roles
 as$role){$this->checkRole($role);}}if($resources===self::ALL){$resources=array(self::ALL);}else{if(!is_array($resources)){$resources=array($resources);}foreach($resources
-as$resource){$this->checkResource($resource);}}if($privileges===self::ALL){$privileges=array();}elseif(!is_array($privileges)){$privileges=array($privileges);}$assertion=$assertion?callback($assertion):NULL;if($toAdd){foreach($resources
+as$resource){$this->checkResource($resource);}}if($privileges===self::ALL){$privileges=array();}elseif(!is_array($privileges)){$privileges=array($privileges);}$assertion=$assertion?new
+Nette\Callback($assertion):NULL;if($toAdd){foreach($resources
 as$resource){foreach($roles
 as$role){$rules=&$this->getRules($resource,$role,TRUE);if(count($privileges)===0){$rules['allPrivileges']['type']=$type;$rules['allPrivileges']['assert']=$assertion;if(!isset($rules['byPrivilege'])){$rules['byPrivilege']=array();}}else{foreach($privileges
 as$privilege){$rules['byPrivilege'][$privilege]['type']=$type;$rules['byPrivilege'][$privilege]['assert']=$assertion;}}}}}else{foreach($resources
@@ -5762,13 +5835,16 @@ ob_get_clean();}catch(\Exception$e){ob_end_clean();if($args&&$args[0]){throw$e;}
 compile(){if(!$this->filters){$this->onPrepareFilters($this);}$code=$this->getSource();foreach($this->filters
 as$filter){$code=self::extractPhp($code,$blocks);$code=$filter($code);$code=strtr($code,$blocks);}return
 Helpers::optimizePhp($code);}function
-registerFilter($callback){$callback=callback($callback);if(in_array($callback,$this->filters)){throw
+registerFilter($callback){$callback=new
+Nette\Callback($callback);if(in_array($callback,$this->filters)){throw
 new
 Nette\InvalidStateException("Filter '$callback' was registered twice.");}$this->filters[]=$callback;return$this;}final
 function
 getFilters(){return$this->filters;}function
-registerHelper($name,$callback){$this->helpers[strtolower($name)]=callback($callback);return$this;}function
-registerHelperLoader($callback){$this->helperLoaders[]=callback($callback);return$this;}final
+registerHelper($name,$callback){$this->helpers[strtolower($name)]=new
+Nette\Callback($callback);return$this;}function
+registerHelperLoader($callback){$this->helperLoaders[]=new
+Nette\Callback($callback);return$this;}final
 function
 getHelpers(){return$this->helpers;}final
 function
@@ -5825,7 +5901,8 @@ static$helpers=array('normalize'=>'Nette\Utils\Strings::normalize','toascii'=>'N
 static$dateFormat='%x';static
 function
 loader($helper){if(method_exists(__CLASS__,$helper)){return
-callback(__CLASS__,$helper);}elseif(isset(self::$helpers[$helper])){return
+new
+Nette\Callback(__CLASS__,$helper);}elseif(isset(self::$helpers[$helper])){return
 self::$helpers[$helper];}}static
 function
 escapeHtml($s,$quotes=ENT_QUOTES){if(is_object($s)&&($s
@@ -6296,16 +6373,13 @@ is_array($value)&&(!$value||array_keys($value)===range(0,count($value)-1));}stat
 function
 isInRange($value,$range){return(!isset($range[0])||$value>=$range[0])&&(!isset($range[1])||$value<=$range[1]);}static
 function
-isEmail($value){$atom="[-a-z0-9!#$%&'*+/=?^_`{|}~]";$localPart="(?:\"(?:[ !\\x23-\\x5B\\x5D-\\x7E]*|\\\\[ -~])+\"|$atom+(?:\\.$atom+)*)";$chars="a-z0-9\x80-\xFF";$domain="[$chars](?:[-$chars]{0,61}[$chars])";return(bool)preg_match("(^$localPart@(?:$domain?\\.)+[-$chars]{2,19}\\z)i",$value);}static
+isEmail($value){$atom="[-a-z0-9!#$%&'*+/=?^_`{|}~]";$localPart="(?:\"(?:[ !\\x23-\\x5B\\x5D-\\x7E]*|\\\\[ -~])+\"|$atom+(?:\\.$atom+)*)";$alpha="a-z\x80-\xFF";$domain="[0-9$alpha](?:[-0-9$alpha]{0,61}[0-9$alpha])?";$topDomain="[$alpha][-0-9$alpha]{0,17}[$alpha]";return(bool)preg_match("(^$localPart@(?:$domain\\.)+$topDomain\\z)i",$value);}static
 function
-isUrl($value){$chars="a-z0-9\x80-\xFF";return(bool)preg_match("#^https?://(?:[$chars](?:[-$chars]{0,61}[$chars])?\\.)+[-$chars]{2,19}(/\S*)?$#i",$value);}}class
+isUrl($value){$alpha="a-z\x80-\xFF";$domain="[0-9$alpha](?:[-0-9$alpha]{0,61}[0-9$alpha])?";$topDomain="[$alpha][-0-9$alpha]{0,17}[$alpha]";return(bool)preg_match("(^https?://(?:(?:$domain\\.)*$topDomain|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d{1,5})?(/\S*)?\\z)i",$value);}}class
 AssertionException
 extends\Exception{}}namespace {Nette\Diagnostics\Debugger::_init();Nette\Utils\SafeStream::register();function
-callback($callback,$m=NULL){if($m===NULL){return$callback
-instanceof
-Nette\Callback?$callback:new
-Nette\Callback($callback);}return
+callback($callback,$m=NULL){return
 new
-Nette\Callback(array($callback,$m));}use
+Nette\Callback($callback,$m);}use
 Nette\Diagnostics\Debugger;function
 dump($var){foreach(func_get_args()as$arg){Debugger::dump($arg);}return$var;}}
