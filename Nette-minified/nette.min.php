@@ -1,15 +1,15 @@
 <?php //netteloader=Nette\Framework
 
 namespace {/**
- * Nette Framework (version 2.0.7 released on 2012-11-28, http://nette.org)
+ * Nette Framework (version 2.0.8 released on 2013-01-01, http://nette.org)
  *
- * Copyright (c) 2004, 2012 David Grudl (http://davidgrudl.com)
+ * Copyright (c) 2004, 2013 David Grudl (http://davidgrudl.com)
  *
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
  */
 
-error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20007);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
+error_reporting(E_ALL|E_STRICT);@set_magic_quotes_runtime(FALSE);iconv_set_encoding('internal_encoding','UTF-8');extension_loaded('mbstring')&&mb_internal_encoding('UTF-8');umask(0);@header('X-Powered-By: Nette Framework');@header('Content-Type: text/html; charset=utf-8');define('NETTE',TRUE);define('NETTE_DIR',__DIR__);define('NETTE_VERSION_ID',20008);define('NETTE_PACKAGE','5.3');}namespace Nette\Diagnostics{use
 Nette;interface
 IBarPanel{function
 getTab();function
@@ -482,7 +482,7 @@ _exceptionHandler(\Exception$exception){if(!headers_sent()){$protocol=isset($_SE
 <p>We're sorry! The server encountered an internal error and was unable to complete your request. Please try again later.</p>
 
 <p><small>error 500</small></p>
-<?php }}else{if(self::$consoleMode){echo"$exception\n";if($file=self::log($exception)){echo"(stored in $file)\n";if(self::$browser){exec(self::$browser.' '.escapeshellarg($file));}}}elseif(self::isHtmlMode()){self::$blueScreen->render($exception);if(self::$bar){self::$bar->render();}}elseif(!self::fireLog($exception,self::ERROR)){$file=self::log($exception);if(!headers_sent()){header("X-Nette-Error-Log: $file");}}}foreach(self::$onFatalError
+<?php }}else{if(self::$consoleMode){echo"$exception\n";if($file=self::log($exception)){echo"(stored in $file)\n";if(self::$browser){exec(self::$browser.' '.escapeshellarg($file));}}}elseif(self::isHtmlMode()){self::$blueScreen->render($exception);if(self::$bar){self::$bar->render();}}elseif(!self::fireLog($exception)){$file=self::log($exception,self::ERROR);if(!headers_sent()){header("X-Nette-Error-Log: $file");}}}foreach(self::$onFatalError
 as$handler){call_user_func($handler,$exception);}}catch(\Exception$e){if(self::$productionMode){echo
 self::isHtmlMode()?'<meta name=robots content=noindex>FATAL ERROR':'FATAL ERROR';}else{echo"FATAL ERROR: thrown ",get_class($e),': ',$e->getMessage(),"\nwhile processing ",get_class($exception),': ',$exception->getMessage(),"\n";}}self::$enabled=FALSE;exit(254);}static
 function
@@ -494,7 +494,7 @@ Nette\FatalErrorException($message,0,$severity,$file,$line,$context);}elseif(($s
 FALSE;}elseif(!self::$productionMode&&(is_bool(self::$strictMode)?self::$strictMode:((self::$strictMode&$severity)===$severity))){self::_exceptionHandler(new
 Nette\FatalErrorException($message,0,$severity,$file,$line,$context));}static$types=array(E_WARNING=>'Warning',E_COMPILE_WARNING=>'Warning',E_USER_WARNING=>'Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'Notice',E_STRICT=>'Strict standards',E_DEPRECATED=>'Deprecated',E_USER_DEPRECATED=>'Deprecated');$message='PHP '.(isset($types[$severity])?$types[$severity]:'Unknown error').": $message";$count=&self::$errorPanel->data["$message|$file|$line"];if($count++){return
 NULL;}elseif(self::$productionMode){self::log("$message in $file:$line",self::ERROR);return
-NULL;}else{$ok=self::fireLog(new\ErrorException($message,0,$severity,$file,$line),self::WARNING);return!self::isHtmlMode()||(!self::$bar&&!$ok)?FALSE:NULL;}return
+NULL;}else{$ok=self::fireLog(new\ErrorException($message,0,$severity,$file,$line));return!self::isHtmlMode()||(!self::$bar&&!$ok)?FALSE:NULL;}return
 FALSE;}static
 function
 toStringException(\Exception$exception){if(self::$enabled){self::_exceptionHandler($exception);}else{trigger_error($exception->getMessage(),E_USER_ERROR);}}static
@@ -564,7 +564,7 @@ $ex=$exception;echo
 htmlspecialchars($ex->getMessage().($ex->getCode()?' #'.$ex->getCode():''));while((method_exists($ex,'getPrevious')&&$ex=$ex->getPrevious())||(isset($ex->previous)&&$ex=$ex->previous))echo
 htmlspecialchars('; caused by '.get_class($ex).' '.$ex->getMessage().($ex->getCode()?' #'.$ex->getCode():''));?> -->
 
-	<style type="text/css" class="nette">html{overflow-y:scroll}body{margin:0 0 2em;padding:0}#netteBluescreen{font:9pt/1.5 Verdana,sans-serif;background:white;color:#333;position:absolute;left:0;top:0;width:100%;z-index:23178;text-align:left}#netteBluescreen *{font:inherit;color:inherit;background:transparent;border:none;margin:0;padding:0;text-align:inherit;text-indent:0}#netteBluescreen b{font-weight:bold}#netteBluescreen i{font-style:italic}#netteBluescreen a{text-decoration:none;color:#328ADC;padding:2px 4px;margin:-2px -4px}#netteBluescreen a:hover,#netteBluescreen a:active,#netteBluescreen a:focus{color:#085AA3}#netteBluescreen a abbr{font-family:sans-serif;color:#BBB}#netteBluescreenIcon{position:absolute;right:.5em;top:.5em;z-index:23179;text-decoration:none;background:#CD1818;padding:3px}#netteBluescreenError{background:#CD1818;color:white;font:13pt/1.5 Verdana,sans-serif!important;display:block}#netteBluescreenError #netteBsSearch{color:#CD1818;font-size:.7em}#netteBluescreenError:hover #netteBsSearch{color:#ED8383}#netteBluescreen h1{font-size:18pt;font-weight:normal;text-shadow:1px 1px 0 rgba(0,0,0,.4);margin:.7em 0}#netteBluescreen h2{font:14pt/1.5 sans-serif!important;color:#888;margin:.6em 0}#netteBluescreen h3{font:bold 10pt/1.5 Verdana,sans-serif!important;margin:1em 0;padding:0}#netteBluescreen p,#netteBluescreen pre{margin:.8em 0}#netteBluescreen pre,#netteBluescreen code,#netteBluescreen table{font:9pt/1.5 Consolas,monospace!important}#netteBluescreen pre,#netteBluescreen table{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#netteBluescreen pre div{min-width:100%;float:left;_float:none;white-space:pre}#netteBluescreen table pre{padding:0;margin:0;border:none}#netteBluescreen pre .php-array,#netteBluescreen pre .php-object{color:#C22}#netteBluescreen pre .php-string{color:#080}#netteBluescreen pre .php-int,#netteBluescreen pre .php-float,#netteBluescreen pre .php-null,#netteBluescreen pre .php-bool{color:#328ADC}#netteBluescreen pre .php-visibility{font-size:85%;color:#998}#netteBluescreen pre.nette-dump a{color:#333}#netteBluescreen div.panel{padding:1px 25px}#netteBluescreen div.inner{background:#F4F3F1;padding:.1em 1em 1em;border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px}#netteBluescreen table{border-collapse:collapse;width:100%}#netteBluescreen .outer{overflow:auto}#netteBluescreen td,#netteBluescreen th{vertical-align:top;text-align:left;padding:2px 6px;border:1px solid #e6dfbf}#netteBluescreen th{font-weight:bold}#netteBluescreen tr>:first-child{width:20%}#netteBluescreen tr:nth-child(2n),#netteBluescreen tr:nth-child(2n) pre{background-color:#F7F0CB}#netteBluescreen ol{margin:1em 0;padding-left:2.5em}#netteBluescreen ul{font:7pt/1.5 Verdana,sans-serif!important;padding:2em 4em;margin:1em 0 0;color:#777;background:#F6F5F3 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAAAjCAMAAADbuxbOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRF/fz24d7Y7Onj5uLd9vPu3drUzMvG09LN39zW8e7o2NbQ3NnT29jS0M7J1tXQAAAApvmsFgAAABB0Uk5T////////////////////AOAjXRkAAAKlSURBVHja7FbbsqQgDAwENEgc//9vN+SCWDtbtXPmZR/Wc6o02mlC58LA9ckFAOszvMV8xNgyUjyXhojfMVKvRL0ZHavxXYy5JrmchMdzou8YlTClxajtK8ZGGpWRoBr1+gFjKfHkJPbizabLgzE3pH7Iu4K980xgFvlrVzMZoVBWhtvouCDdcTDmTgMCJdVxJ9MKO6XxnliM7hxi5lbj2ZVM4l8DqYyKoNLYcfqBB1/LpHYxEcfVG6ZpMDgyFUVWY/Q1sSYPpIdSAKWqLWL0XqWiMWc4hpH0OQOMOAgdycY4N9Sb7wWANQs3rsDSdLAYiuxi5siVfOhBWIrtH0G3kNaF/8Q4kCPE1kMucG/ZMUBUCOgiKJkPuWWTLGVgLGpwns1DraUayCtoBqERyaYtVsm85NActRooezvSLO/sKZP/nq8n4+xcyjNsRu8zW6KWpdb7wjiQd4WrtFZYFiKHENSmWp6xshh96c2RQ+c7Lt+qbijyEjHWUJ/pZsy8MGIUuzNiPySK2Gqoh6ZTRF6ko6q3nVTkaA//itIrDpW6l3SLo8juOmqMXkYknu5FdQxWbhCfKHEGDhxxyTVaXJF3ZjSl3jMksjSOOKmne9pI+mcG5QvaUJhI9HpkmRo2NpCrDJvsktRhRE2MM6F2n7dt4OaMUq8bCctk0+PoMRzL+1l5PZ2eyM/Owr86gf8z/tOM53lom5+nVcFuB+eJVzlXwAYy9TZ9s537tfqcsJWbEU4nBngZo6FfO9T9CdhfBtmk2dLiAy8uS4zwOpMx2HqYbTC+amNeAYTpsP4SIgvWfUBWXxn3CMHW3ffd7k3+YIkx7w0t/CVGvcPejoeOlzOWzeGbawOHqXQGUTMZRcfj4XPCgW9y/fuvVn8zD9P1QHzv80uAAQA0i3Jer7Jr7gAAAABJRU5ErkJggg==') 99% 10px no-repeat;border-top:1px solid #DDD}#netteBluescreen .highlight{background:#CD1818;color:white;font-weight:bold;font-style:normal;display:block;padding:0 .4em;margin:0 -.4em}#netteBluescreen .line{color:#9F9C7F;font-weight:normal;font-style:normal}#netteBluescreen a[href^=editor\:]{color:inherit;border-bottom:1px dotted #C1D2E1}</style>
+	<style type="text/css" class="nette">html{overflow-y:scroll}body{margin:0 0 2em;padding:0}#netteBluescreen{font:9pt/1.5 Verdana,sans-serif;background:white;color:#333;position:absolute;left:0;top:0;width:100%;z-index:23178;text-align:left}#netteBluescreen *{font:inherit;color:inherit;background:transparent;border:none;margin:0;padding:0;text-align:inherit;text-indent:0}#netteBluescreen b{font-weight:bold}#netteBluescreen i{font-style:italic}#netteBluescreen a{text-decoration:none;color:#328ADC;padding:2px 4px;margin:-2px -4px}#netteBluescreen a:hover,#netteBluescreen a:active,#netteBluescreen a:focus{color:#085AA3}#netteBluescreen a abbr{font-family:sans-serif;color:#BBB}#netteBluescreenIcon{position:absolute;right:.5em;top:.5em;z-index:23179;text-decoration:none;background:#CD1818;padding:3px}#netteBluescreenError{background:#CD1818;color:white;font:13pt/1.5 Verdana,sans-serif!important;display:block}#netteBluescreenError #netteBsSearch{color:#CD1818;font-size:.7em}#netteBluescreenError:hover #netteBsSearch{color:#ED8383}#netteBluescreen h1{font-size:18pt;font-weight:normal;text-shadow:1px 1px 0 rgba(0,0,0,.4);margin:.7em 0}#netteBluescreen h2{font:14pt/1.5 sans-serif!important;color:#888;margin:.6em 0}#netteBluescreen h3{font:bold 10pt/1.5 Verdana,sans-serif!important;margin:1em 0;padding:0}#netteBluescreen p,#netteBluescreen pre{margin:.8em 0}#netteBluescreen pre,#netteBluescreen code,#netteBluescreen table{font:9pt/1.5 Consolas,monospace!important}#netteBluescreen pre,#netteBluescreen table{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#netteBluescreen pre div{min-width:100%;float:left;_float:none;white-space:pre}#netteBluescreen table pre{padding:0;margin:0;border:none}#netteBluescreen pre .php-array,#netteBluescreen pre .php-object{color:#C22}#netteBluescreen pre .php-string{color:#080}#netteBluescreen pre .php-int,#netteBluescreen pre .php-float,#netteBluescreen pre .php-null,#netteBluescreen pre .php-bool{color:#328ADC}#netteBluescreen pre .php-visibility{font-size:85%;color:#998}#netteBluescreen pre.nette-dump a{color:#333}#netteBluescreen div.panel{padding:1px 25px}#netteBluescreen div.inner{background:#F4F3F1;padding:.1em 1em 1em;border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px}#netteBluescreen table{border-collapse:collapse;width:100%}#netteBluescreen .outer{overflow:auto}#netteBluescreen td,#netteBluescreen th{vertical-align:top;text-align:left;padding:2px 6px;border:1px solid #e6dfbf}#netteBluescreen th{font-weight:bold}#netteBluescreen tr>:first-child{width:20%}#netteBluescreen tr:nth-child(2n),#netteBluescreen tr:nth-child(2n) pre{background-color:#F7F0CB}#netteBluescreen ol{margin:1em 0;padding-left:2.5em}#netteBluescreen ul{font:7pt/1.5 Verdana,sans-serif!important;padding:2em 4em;margin:1em 0 0;color:#777;background:#F6F5F3 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAAAjCAMAAADbuxbOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRF/fz24d7Y7Onj5uLd9vPu3drUzMvG09LN39zW8e7o2NbQ3NnT29jS0M7J1tXQAAAApvmsFgAAABB0Uk5T////////////////////AOAjXRkAAAKlSURBVHja7FbbsqQgDAwENEgc//9vN+SCWDtbtXPmZR/Wc6o02mlC58LA9ckFAOszvMV8xNgyUjyXhojfMVKvRL0ZHavxXYy5JrmchMdzou8YlTClxajtK8ZGGpWRoBr1+gFjKfHkJPbizabLgzE3pH7Iu4K980xgFvlrVzMZoVBWhtvouCDdcTDmTgMCJdVxJ9MKO6XxnliM7hxi5lbj2ZVM4l8DqYyKoNLYcfqBB1/LpHYxEcfVG6ZpMDgyFUVWY/Q1sSYPpIdSAKWqLWL0XqWiMWc4hpH0OQOMOAgdycY4N9Sb7wWANQs3rsDSdLAYiuxi5siVfOhBWIrtH0G3kNaF/8Q4kCPE1kMucG/ZMUBUCOgiKJkPuWWTLGVgLGpwns1DraUayCtoBqERyaYtVsm85NActRooezvSLO/sKZP/nq8n4+xcyjNsRu8zW6KWpdb7wjiQd4WrtFZYFiKHENSmWp6xshh96c2RQ+c7Lt+qbijyEjHWUJ/pZsy8MGIUuzNiPySK2Gqoh6ZTRF6ko6q3nVTkaA//itIrDpW6l3SLo8juOmqMXkYknu5FdQxWbhCfKHEGDhxxyTVaXJF3ZjSl3jMksjSOOKmne9pI+mcG5QvaUJhI9HpkmRo2NpCrDJvsktRhRE2MM6F2n7dt4OaMUq8bCctk0+PoMRzL+1l5PZ2eyM/Owr86gf8z/tOM53lom5+nVcFuB+eJVzlXwAYy9TZ9s537tfqcsJWbEU4nBngZo6FfO9T9CdhfBtmk2dLiAy8uS4zwOpMx2HqYbTC+amNeAYTpsP4SIgvWfUBWXxn3CMHW3ffd7k3+YIkx7w0t/CVGvcPejoeOlzOWzeGbawOHqXQGUTMZRcfj4XPCgW9y/fuvVn8zD9P1QHzv80uAAQA0i3Jer7Jr7gAAAABJRU5ErkJggg==') 99% 10px no-repeat;border-top:1px solid #DDD}#netteBluescreen .highlight{background:#CD1818;color:white;font-weight:bold;font-style:normal;display:block;padding:0 .4em;margin:0 -.4em}#netteBluescreen .line{color:#9F9C7F;font-weight:normal;font-style:normal}#netteBluescreen a[href^=editor\:]{color:inherit;border-bottom:1px dotted #C1D2E1}#netteBluescreen .caused{float:right;padding:.3em .6em;background:#df8075;border-radius:0 0 0 8px;white-space:nowrap}#netteBluescreen .caused a{color:white}</style>
 </head>
 
 
@@ -583,13 +583,19 @@ htmlspecialchars($exception->getMessage())?> <a href="http://www.google.cz/searc
 urlencode($title.' '.preg_replace('#\'.*\'|".*"#Us','',$exception->getMessage()))?>" id="netteBsSearch">search&#x25ba;</a></p>
 		</div>
 
+		<?php if((method_exists($exception,'getPrevious')&&$prev=$exception->getPrevious())||(isset($exception->previous)&&$prev=$exception->previous)):?>
+		<div class="caused">
+			<a href="#netteCaused">Caused by <?php echo
+get_class($prev)?></a>
+		</div>
+		<?php endif?>
 
 
 		<?php $ex=$exception;$level=0;?>
 		<?php do{?>
 
 			<?php if($level++):?>
-			<div class="panel">
+			<div class="panel"<?php if($level===2)echo' id="netteCaused"'?>>
 			<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">Caused by <abbr><?php echo($collapsed=$level>2)?'&#x25ba;':'&#x25bc;'?></abbr></a></h2>
 
 			<div id="netteBsPnl<?php echo$counter?>" class="<?php echo$collapsed?'nette-collapsed ':''?>inner">
@@ -926,8 +932,8 @@ c=Nette.Q.implement,d=Nette.Q.prototype,f=Object.prototype.hasOwnProperty;for(b 
 if("#"===b.charAt(0))return[document.getElementById(b.substring(1))];var b=b.split("."),c=a.getElementsByTagName(b[0]||"*");if(b[1]){for(var d=[],f=RegExp("(^|\\s)"+b[1]+"(\\s|$)"),e=0,h=c.length;e<h;e++)f.test(c[e].className)&&d.push(c[e]);return d}return c},dom:function(){return this[0]},each:function(a,b){for(var c=0,d;c<this.length;c++)if(void 0!==(d=a.apply(this[c],b||[])))return d;return this}});var i=Nette.Q.factory,e=Nette.Q.implement;e({bind:function(a,b){if(document.addEventListener&&("mouseenter"===
 a||"mouseleave"===a))var c=b,a="mouseenter"===a?"mouseover":"mouseout",b=function(a){for(var b=a.relatedTarget;b;b=b.parentNode)if(b===this)return;c.call(this,a)};var d=e.data.call(this),d=d.events=d.events||{};if(!d[a]){var f=this,g=d[a]=[],h=e.bind.genericHandler=function(a){a.target||(a.target=a.srcElement);a.preventDefault||(a.preventDefault=function(){a.returnValue=!1});a.stopPropagation||(a.stopPropagation=function(){a.cancelBubble=!0});a.stopImmediatePropagation=function(){this.stopPropagation();
 b=g.length};for(var b=0;b<g.length;b++)g[b].call(f,a)};document.addEventListener?this.addEventListener(a,h,!1):document.attachEvent&&this.attachEvent("on"+a,h)}d[a].push(b)},addClass:function(a){this.className=this.className.replace(/^|\s+|$/g," ").replace(" "+a+" "," ")+" "+a},removeClass:function(a){this.className=this.className.replace(/^|\s+|$/g," ").replace(" "+a+" "," ")},hasClass:function(a){return-1<this.className.replace(/^|\s+|$/g," ").indexOf(" "+a+" ")},show:function(){var a=e.show.display=
-e.show.display||{},b=this.tagName;if(!a[b]){var c=document.body.appendChild(document.createElement(b));a[b]=e.css.call(c,"display")}this.style.display=a[b]},hide:function(){this.style.display="none"},css:function(a){return this.currentStyle?this.currentStyle[a]:window.getComputedStyle?document.defaultView.getComputedStyle(this,null).getPropertyValue(a):void 0},data:function(){return this.nette?this.nette:this.nette={}},val:function(){var a,b,c;if(!this.nodeName){a=0;for(b=this.length;a<b;a++)if(this[a].checked)return this[a].value;
-return null}if("select"===this.nodeName.toLowerCase()){a=this.selectedIndex;var d=this.options;if(0>a)return null;if("select-one"===this.type)return d[a].value;a=0;c=[];for(b=d.length;a<b;a++)d[a].selected&&c.push(d[a].value);return c}return"checkbox"===this.type?this.checked:this.value.replace(/^\s+|\s+$/g,"")},_trav:function(a,b,c){for(b=b.split(".");a&&!(1===a.nodeType&&(!b[0]||a.tagName.toLowerCase()===b[0])&&(!b[1]||e.hasClass.call(a,b[1])));)a=a[c];return i(a)},closest:function(a){return e._trav(this,
+e.show.display||{},b=this.tagName;if(!a[b]){var c=document.body.appendChild(document.createElement(b));a[b]=e.css.call(c,"display")}this.style.display=a[b]},hide:function(){this.style.display="none"},css:function(a){return this.currentStyle?this.currentStyle[a]:window.getComputedStyle?document.defaultView.getComputedStyle(this,null).getPropertyValue(a):void 0},data:function(){return this.nette?this.nette:this.nette={}},val:function(){var a,b,c;if(!this.nodeName){for(a=0,b=this.length;a<b;a++)if(this[a].checked)return this[a].value;
+return null}if("select"===this.nodeName.toLowerCase()){a=this.selectedIndex;var d=this.options;if(0>a)return null;if("select-one"===this.type)return d[a].value;for(a=0,c=[],b=d.length;a<b;a++)d[a].selected&&c.push(d[a].value);return c}return"checkbox"===this.type?this.checked:this.value.replace(/^\s+|\s+$/g,"")},_trav:function(a,b,c){for(b=b.split(".");a&&!(1===a.nodeType&&(!b[0]||a.tagName.toLowerCase()===b[0])&&(!b[1]||e.hasClass.call(a,b[1])));)a=a[c];return i(a)},closest:function(a){return e._trav(this,
 a,"parentNode")},prev:function(a){return e._trav(this.previousSibling,a,"previousSibling")},next:function(a){return e._trav(this.nextSibling,a,"nextSibling")},offset:function(a){for(var b=this,c=a?{left:-a.left||0,top:-a.top||0}:e.position.call(b);b=b.offsetParent;)c.left+=b.offsetLeft,c.top+=b.offsetTop;if(a)e.position.call(this,{left:-c.left,top:-c.top});else return c},position:function(a){if(a)this.nette&&this.nette.onmove&&this.nette.onmove.call(this,a),this.style.left=(a.left||0)+"px",this.style.top=
 (a.top||0)+"px";else return{left:this.offsetLeft,top:this.offsetTop,width:this.offsetWidth,height:this.offsetHeight}},draggable:function(a){var b=i(this),c=document.documentElement,d,a=a||{};i(a.handle||this).bind("mousedown",function(f){f.preventDefault();f.stopPropagation();if(e.draggable.binded)return c.onmouseup(f);var g=b[0].offsetLeft-f.clientX,h=b[0].offsetTop-f.clientY;e.draggable.binded=!0;d=!1;c.onmousemove=function(c){c=c||event;d||(a.draggedClass&&b.addClass(a.draggedClass),a.start&&a.start(c,
 b),d=!0);b.position({left:c.clientX+g,top:c.clientY+h});return!1};c.onmouseup=function(f){d&&(a.draggedClass&&b.removeClass(a.draggedClass),a.stop&&a.stop(f||event,b));e.draggable.binded=c.onmousemove=c.onmouseup=null;return!1}}).bind("click",function(a){d&&a.stopImmediatePropagation()})}})})();
@@ -935,7 +941,7 @@ b),d=!0);b.position({left:c.clientX+g,top:c.clientY+h});return!1};c.onmouseup=fu
 "#nette-debug-panel-"+a.replace("nette-debug-panel-",""))},reposition:function(){this.hasClass(a.WINDOW)?window.resizeBy(document.documentElement.scrollWidth-document.documentElement.clientWidth,document.documentElement.scrollHeight-document.documentElement.clientHeight):(this.position(this.position()),this.position().width&&(document.cookie=this.dom().id+"="+this.position().left+":"+this.position().top+"; path=/"))},focus:function(){this.hasClass(a.WINDOW)?this.data().win.focus():(clearTimeout(this.data().blurTimeout),
 this.addClass(a.FOCUSED).show(),this[0].style.zIndex=i++)},blur:function(){this.removeClass(a.FOCUSED);if(this.hasClass(a.PEEK)){var b=this;this.data().blurTimeout=setTimeout(function(){b.hide()},50)}},toFloat:function(){this.removeClass(a.WINDOW).removeClass(a.PEEK).addClass(a.FLOAT).show().reposition();return this},toPeek:function(){this.removeClass(a.WINDOW).removeClass(a.FLOAT).addClass(a.PEEK).hide();document.cookie=this.dom().id+"=; path=/"},toWindow:function(){var b=this,c,d;d=this.offset();
 var f=this.dom().id;d.left+="number"===typeof window.screenLeft?window.screenLeft:window.screenX+10;d.top+="number"===typeof window.screenTop?window.screenTop:window.screenY+50;if(c=window.open("",f.replace(/-/g,"_"),"left="+d.left+",top="+d.top+",width="+d.width+",height="+(d.height+15)+",resizable=yes,scrollbars=yes"))d=c.document,d.write('<!DOCTYPE html><meta charset="utf-8"><style>'+e("#nette-debug-style").dom().innerHTML+"</style><script>"+e("#nette-debug-script").dom().innerHTML+'<\/script><body id="nette-debug">'),
-d.body.innerHTML='<div class="nette-panel nette-mode-window" id="'+f+'">'+this.dom().innerHTML+"</div>",c.Nette.Debug.Panel.factory(f).initToggler().reposition(),d.title=b.find("h1").dom().innerHTML,e([c]).bind("unload",function(){b.toPeek();c.close()}),e(d).bind("keyup",function(a){27===a.keyCode&&(!a.shiftKey&&!a.altKey&&!a.ctrlKey&&!a.metaKey)&&c.close()}),document.cookie=f+"=window; path=/",this.hide().removeClass(a.FLOAT).removeClass(a.PEEK).addClass(a.WINDOW).data().win=c},init:function(){var b=
+d.body.innerHTML='<div class="nette-panel nette-mode-window" id="'+f+'">'+this.dom().innerHTML+"</div>",c.Nette.Debug.Panel.factory(f).initToggler().reposition(),d.title=b.find("h1").dom().innerHTML,e([c]).bind("unload",function(){b.toPeek();c.close()}),e(d).bind("keyup",function(a){27===a.keyCode&&!a.shiftKey&&!a.altKey&&!a.ctrlKey&&!a.metaKey&&c.close()}),document.cookie=f+"=window; path=/",this.hide().removeClass(a.FLOAT).removeClass(a.PEEK).addClass(a.WINDOW).data().win=c},init:function(){var b=
 this,c;b.data().onmove=function(a){var b=document,c=window.innerWidth||b.documentElement.clientWidth||b.body.clientWidth,b=window.innerHeight||b.documentElement.clientHeight||b.body.clientHeight;a.left=Math.max(Math.min(a.left,0.8*this.offsetWidth),0.2*this.offsetWidth-c);a.top=Math.max(Math.min(a.top,0.8*this.offsetHeight),this.offsetHeight-b)};e(window).bind("resize",function(){b.reposition()});b.draggable({handle:b.find("h1"),stop:function(){b.toFloat()}}).bind("mouseenter",function(){b.focus()}).bind("mouseleave",
 function(){b.blur()});this.initToggler();b.find(".nette-icons").find("a").bind("click",function(a){"close"===this.rel?b.toPeek():b.toWindow();a.preventDefault()});(c=document.cookie.match(RegExp(b.dom().id+"=(window|(-?[0-9]+):(-?[0-9]+))")))?c[2]?b.toFloat().position({left:c[2],top:c[3]}):b.toWindow():b.addClass(a.PEEK)},initToggler:function(){var b=this;this.bind("click",function(c){var d=e(c.target).closest("a").dom();d&&d.rel&&(a._toggle(d),c.preventDefault(),b.reposition())});return this}});
 Nette.Debug.Bar=Nette.Class({Extends:Nette.Q,constructor:function(){Nette.Q.call(this,"#nette-debug-bar")},init:function(){var b=this,c;b.data().onmove=function(a){var b=document,c=window.innerWidth||b.documentElement.clientWidth||b.body.clientWidth,b=window.innerHeight||b.documentElement.clientHeight||b.body.clientHeight;a.left=Math.max(Math.min(a.left,0),this.offsetWidth-c);a.top=Math.max(Math.min(a.top,0),this.offsetHeight-b)};e(window).bind("resize",function(){b.position(b.position())});b.draggable({draggedClass:"nette-dragged",
@@ -2291,7 +2297,7 @@ instanceof
 Nette\Callback||$data
 instanceof\Closure){$this->storage->lock($key);$data=Nette\Callback::create($data)->invokeArgs(array(&$dp));}if($data===NULL){$this->storage->remove($key);}else{$this->storage->write($key,$data,$this->completeDependencies($dp,$data));return$data;}}private
 function
-completeDependencies($dp,$data){if(is_object($data)){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkSerializationVersion'),get_class($data),Nette\Reflection\ClassType::from($data)->getAnnotation('serializationVersion'));}if(isset($dp[Cache::EXPIRATION])){$dp[Cache::EXPIRATION]=Nette\DateTime::from($dp[Cache::EXPIRATION])->format('U')-time();}if(isset($dp[self::FILES])){foreach(array_unique((array)$dp[self::FILES])as$item){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkFile'),$item,@filemtime($item));}unset($dp[self::FILES]);}if(isset($dp[self::ITEMS])){$dp[self::ITEMS]=array_unique((array)$dp[self::ITEMS]);foreach($dp[self::ITEMS]as$k=>$item){$dp[self::ITEMS][$k]=$this->generateKey($item);}}if(isset($dp[self::CONSTS])){foreach(array_unique((array)$dp[self::CONSTS])as$item){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkConst'),$item,constant($item));}unset($dp[self::CONSTS]);}if(!is_array($dp)){$dp=array();}return$dp;}function
+completeDependencies($dp,$data){if(is_object($data)){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkSerializationVersion'),get_class($data),Nette\Reflection\ClassType::from($data)->getAnnotation('serializationVersion'));}if(isset($dp[Cache::EXPIRATION])){$dp[Cache::EXPIRATION]=Nette\DateTime::from($dp[Cache::EXPIRATION])->format('U')-time();}if(isset($dp[self::FILES])){foreach(array_unique((array)$dp[self::FILES])as$item){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkFile'),$item,@filemtime($item));}unset($dp[self::FILES]);}if(isset($dp[self::ITEMS])){$dp[self::ITEMS]=array_unique(array_map(array($this,'generateKey'),(array)$dp[self::ITEMS]));}if(isset($dp[self::CONSTS])){foreach(array_unique((array)$dp[self::CONSTS])as$item){$dp[self::CALLBACKS][]=array(array(__CLASS__,'checkConst'),$item,constant($item));}unset($dp[self::CONSTS]);}if(!is_array($dp)){$dp=array();}return$dp;}function
 remove($key){$this->save($key,NULL);}function
 clean(array$conds=NULL){$this->release();$this->storage->clean((array)$conds);}function
 call($function){$key=func_get_args();return$this->load($key,function()use($function,$key){array_shift($key);return
@@ -2727,7 +2733,7 @@ getConfig($key=NULL,$default=NULL){$params=Nette\ArrayHash::from(self::getContex
 isset($params[$key])?$params[$key]:$default;}else{return$params;}}}final
 class
 Framework{const
-NAME='Nette Framework',VERSION='2.0.7',REVISION='0ce871c released on 2012-11-28';public
+NAME='Nette Framework',VERSION='2.0.8',REVISION='b7f6732 released on 2013-01-01';public
 static$iAmUsingBadHost=FALSE;final
 function
 __construct(){throw
@@ -3001,7 +3007,7 @@ Nette\Object{const
 AUTO=NULL,NONE=FALSE;const
 DEVELOPMENT='development',PRODUCTION='production';public$onCompile;protected$parameters;protected$files=array();function
 __construct(){$this->parameters=$this->getDefaultParameters();}function
-setDebugMode($value=TRUE){$this->parameters['debugMode']=is_bool($value)?$value:self::detectDebugMode($value);$this->parameters['productionMode']=!$this->parameters['debugMode'];return$this;}function
+setDebugMode($value=TRUE){$this->parameters['debugMode']=is_bool($value)?$value:static::detectDebugMode($value);$this->parameters['productionMode']=!$this->parameters['debugMode'];return$this;}function
 isDebugMode(){return!$this->parameters['productionMode'];}function
 setTempDirectory($path){$this->parameters['tempDir']=$path;if(($cacheDir=$this->getCacheDirectory())&&!is_dir($cacheDir)){mkdir($cacheDir,0777);}return$this;}function
 addParameters(array$params){$this->parameters=Helpers::merge($params,$this->parameters);return$this;}protected
@@ -3232,7 +3238,7 @@ getIndexes($table){$indexes=array();foreach($this->connection->query('SHOW INDEX
 array_values($indexes);}function
 getForeignKeys($table){$keys=array();$query='SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE '.'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = '.$this->connection->quote($table);foreach($this->connection->query($query)as$id=>$row){$keys[$id]['name']=$row['CONSTRAINT_NAME'];$keys[$id]['local']=$row['COLUMN_NAME'];$keys[$id]['table']=$row['REFERENCED_TABLE_NAME'];$keys[$id]['foreign']=$row['REFERENCED_COLUMN_NAME'];}return
 array_values($keys);}function
-isSupported($item){return$item===self::SUPPORT_COLUMNS_META||$item==self::SUPPORT_SELECT_UNGROUPED_COLUMNS;}}class
+isSupported($item){return$item===self::SUPPORT_COLUMNS_META||$item===self::SUPPORT_SELECT_UNGROUPED_COLUMNS;}}class
 OciDriver
 extends
 Nette\Object
@@ -3299,75 +3305,81 @@ applyLimit(&$sql,$limit,$offset){if($limit>=0)$sql.=' LIMIT '.(int)$limit;if($of
 normalizeRow($row,$statement){return$row;}function
 getTables(){$tables=array();foreach($this->connection->query("
 			SELECT
-				table_name AS name,
-				table_type = 'VIEW' AS view
+				c.relname::varchar AS name,
+				c.relkind = 'v' AS view
 			FROM
-				information_schema.tables
+				pg_catalog.pg_class AS c
+				JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
 			WHERE
-				table_schema = current_schema()
+				c.relkind IN ('r', 'v')
+				AND n.nspname = current_schema()
+			ORDER BY
+				c.relname
 		")as$row){$tables[]=(array)$row;}return$tables;}function
 getColumns($table){$columns=array();foreach($this->connection->query("
 			SELECT
-				c.column_name AS name,
-				c.table_name AS table,
-				upper(c.udt_name) AS nativetype,
-				greatest(c.character_maximum_length, c.numeric_precision) AS size,
+				a.attname::varchar AS name,
+				c.relname::varchar AS table,
+				upper(t.typname) AS nativetype,
+				NULL AS size,
 				FALSE AS unsigned,
-				c.is_nullable = 'YES' AS nullable,
-				c.column_default AS default,
-				coalesce(tc.constraint_type = 'PRIMARY KEY', FALSE) AND strpos(c.column_default, 'nextval') = 1 AS autoincrement,
-				coalesce(tc.constraint_type = 'PRIMARY KEY', FALSE) AS primary,
-				substring(c.column_default from 'nextval[(]''\"?([^''\"]+)') AS sequence
+				NOT (a.attnotnull OR t.typtype = 'd' AND t.typnotnull) AS nullable,
+				ad.adsrc::varchar AS default,
+				coalesce(co.contype = 'p' AND strpos(ad.adsrc, 'nextval') = 1, FALSE) AS autoincrement,
+				coalesce(co.contype = 'p', FALSE) AS primary,
+				substring(ad.adsrc from 'nextval[(]''\"?([^''\"]+)') AS sequence
 			FROM
-				information_schema.columns AS c
-				LEFT JOIN information_schema.constraint_column_usage AS ccu USING(table_catalog, table_schema, table_name, column_name)
-				LEFT JOIN information_schema.table_constraints AS tc USING(constraint_catalog, constraint_schema, constraint_name)
+				pg_catalog.pg_attribute AS a
+				JOIN pg_catalog.pg_class AS c ON a.attrelid = c.oid
+				JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
+				JOIN pg_catalog.pg_type AS t ON a.atttypid = t.oid
+				LEFT JOIN pg_catalog.pg_attrdef AS ad ON ad.adrelid = c.oid AND ad.adnum = a.attnum
+				LEFT JOIN pg_catalog.pg_constraint AS co ON co.connamespace = n.oid AND contype = 'p' AND co.conrelid = c.oid AND a.attnum = ANY(co.conkey)
 			WHERE
-				c.table_name = {$this->connection->quote($table)}
-				AND
-				c.table_schema = current_schema()
-				AND
-				(tc.constraint_type IS NULL OR tc.constraint_type = 'PRIMARY KEY')
+				c.relkind IN ('r', 'v')
+				AND c.relname::varchar = {$this->connection->quote($table)}
+				AND n.nspname = current_schema()
+				AND a.attnum > 0
+				AND NOT a.attisdropped
 			ORDER BY
-				c.ordinal_position
+				a.attnum
 		")as$row){$column=(array)$row;$column['vendor']=$column;unset($column['sequence']);$columns[]=$column;}return$columns;}function
 getIndexes($table){$indexes=array();foreach($this->connection->query("
 			SELECT
-				c2.relname AS name,
-				indisunique AS unique,
-				indisprimary AS primary,
-				attname AS column
+				c2.relname::varchar AS name,
+				i.indisunique AS unique,
+				i.indisprimary AS primary,
+				a.attname::varchar AS column
 			FROM
-				pg_class AS c1
-				JOIN pg_namespace ON c1.relnamespace = pg_namespace.oid
-				JOIN pg_index ON c1.oid = indrelid
-				JOIN pg_class AS c2 ON indexrelid = c2.oid
-				LEFT JOIN pg_attribute ON c1.oid = attrelid AND attnum = ANY(indkey)
+				pg_catalog.pg_class AS c1
+				JOIN pg_catalog.pg_namespace AS n ON c1.relnamespace = n.oid
+				JOIN pg_catalog.pg_index AS i ON c1.oid = i.indrelid
+				JOIN pg_catalog.pg_class AS c2 ON i.indexrelid = c2.oid
+				LEFT JOIN pg_catalog.pg_attribute AS a ON c1.oid = a.attrelid AND a.attnum = ANY(i.indkey)
 			WHERE
-				nspname = current_schema()
-				AND
-				c1.relkind = 'r'
-				AND
-				c1.relname = {$this->connection->quote($table)}
+				n.nspname = current_schema()
+				AND c1.relkind = 'r'
+				AND c1.relname = {$this->connection->quote($table)}
 		")as$row){$indexes[$row['name']]['name']=$row['name'];$indexes[$row['name']]['unique']=$row['unique'];$indexes[$row['name']]['primary']=$row['primary'];$indexes[$row['name']]['columns'][]=$row['column'];}return
 array_values($indexes);}function
-getForeignKeys($table){$keys=array();foreach($this->connection->query("
+getForeignKeys($table){return$this->connection->query("
 			SELECT
-				tc.constraint_name AS name,
-				kcu.column_name AS local,
-				ccu.table_name AS table,
-				ccu.column_name AS foreign
+				co.conname::varchar AS name,
+				al.attname::varchar AS local,
+				cf.relname::varchar AS table,
+				af.attname::varchar AS foreign
 			FROM
-				information_schema.table_constraints AS tc
-				JOIN information_schema.key_column_usage AS kcu USING(constraint_catalog, constraint_schema, constraint_name)
-				JOIN information_schema.constraint_column_usage AS ccu USING(constraint_catalog, constraint_schema, constraint_name)
+				pg_catalog.pg_constraint AS co
+				JOIN pg_catalog.pg_namespace AS n ON co.connamespace = n.oid
+				JOIN pg_catalog.pg_class AS cl ON co.conrelid = cl.oid
+				JOIN pg_catalog.pg_class AS cf ON co.confrelid = cf.oid
+				JOIN pg_catalog.pg_attribute AS al ON al.attrelid = cl.oid AND al.attnum = co.conkey[1]
+				JOIN pg_catalog.pg_attribute AS af ON af.attrelid = cf.oid AND af.attnum = co.confkey[1]
 			WHERE
-				constraint_type = 'FOREIGN KEY'
-				AND
-				tc.table_name = {$this->connection->quote($table)}
-			ORDER BY
-				kcu.ordinal_position
-		")as$row){$keys[]=(array)$row;}return$keys;}function
+				n.nspname = current_schema()
+				AND co.contype = 'f'
+				AND cl.relname = {$this->connection->quote($table)}
+		")->fetchAll();}function
 isSupported($item){return$item===self::SUPPORT_COLUMNS_META||$item===self::SUPPORT_SEQUENCE;}}class
 SqliteDriver
 extends
@@ -3545,12 +3557,12 @@ Nette;class
 ActiveRow
 extends
 Nette\Object
-implements\IteratorAggregate,\ArrayAccess{private$table;private$data;private$modified=array();function
+implements\IteratorAggregate,\ArrayAccess{private$table;private$data;private$dataRefreshed=FALSE;private$modified=array();function
 __construct(array$data,Selection$table){$this->data=$data;$this->table=$table;}function
 setTable(Selection$table){$this->table=$table;}function
 getTable(){return$this->table;}function
 __toString(){try{return(string)$this->getPrimary();}catch(\Exception$e){trigger_error("Exception in ".__METHOD__."(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}",E_USER_ERROR);}}function
-toArray(){$this->access(NULL);return$this->data;}function
+toArray(){$this->accessColumn(NULL);return$this->data;}function
 getPrimary($need=TRUE){$primary=$this->table->getPrimary();if(!is_array($primary)){if(isset($this->data[$primary])){return$this->data[$primary];}elseif($need){throw
 new
 Nette\InvalidStateException("Row does not contain primary $primary column data.");}else{return
@@ -3565,22 +3577,25 @@ ref($key,$throughColumn=NULL){if(!$throughColumn){list($key,$throughColumn)=$thi
 related($key,$throughColumn=NULL){if(strpos($key,'.')!==FALSE){list($key,$throughColumn)=explode('.',$key);}elseif(!$throughColumn){list($key,$throughColumn)=$this->table->getConnection()->getDatabaseReflection()->getHasManyReference($this->table->getName(),$key);}return$this->table->getReferencingTable($key,$throughColumn,$this[$this->table->getPrimary()]);}function
 update($data=NULL){if($data===NULL){$data=$this->modified;}return$this->table->getConnection()->table($this->table->getName())->find($this->getPrimary())->update($data);}function
 delete(){$res=$this->table->getConnection()->table($this->table->getName())->find($this->getPrimary())->delete();if($res>0&&($signature=$this->getSignature(FALSE))){unset($this->table[$signature]);}return$res;}function
-getIterator(){$this->access(NULL);return
+getIterator(){$this->accessColumn(NULL);return
 new\ArrayIterator($this->data);}function
 offsetSet($key,$value){$this->__set($key,$value);}function
 offsetGet($key){return$this->__get($key);}function
 offsetExists($key){return$this->__isset($key);}function
 offsetUnset($key){$this->__unset($key);}function
-__set($key,$value){$this->data[$key]=$value;$this->modified[$key]=$value;}function&__get($key){$this->access($key);if(array_key_exists($key,$this->data)){return$this->data[$key];}list($table,$column)=$this->table->getConnection()->getDatabaseReflection()->getBelongsToReference($this->table->getName(),$key);$referenced=$this->getReference($table,$column);if($referenced!==FALSE){$this->access($key,FALSE);return$referenced;}$this->access($key,NULL);throw
+__set($key,$value){$this->data[$key]=$value;$this->modified[$key]=$value;}function&__get($key){$this->accessColumn($key);if(array_key_exists($key,$this->data)){return$this->data[$key];}list($table,$column)=$this->table->getConnection()->getDatabaseReflection()->getBelongsToReference($this->table->getName(),$key);$referenced=$this->getReference($table,$column);if($referenced!==FALSE){$this->accessColumn($key,FALSE);return$referenced;}$this->removeAccessColumn($key);throw
 new
 Nette\MemberAccessException("Cannot read an undeclared column \"$key\".");}function
-__isset($key){$this->access($key);if(array_key_exists($key,$this->data)){return
-isset($this->data[$key]);}$this->access($key,NULL);return
+__isset($key){$this->accessColumn($key);if(array_key_exists($key,$this->data)){return
+isset($this->data[$key]);}$this->removeAccessColumn($key);return
 FALSE;}function
-__unset($key){unset($this->data[$key]);unset($this->modified[$key]);}function
-access($key,$cache=TRUE){if($this->table->getConnection()->getCache()&&!isset($this->modified[$key])&&$this->table->access($key,$cache)){$this->data=$this->table[$this->getSignature()]->data;}}protected
+__unset($key){unset($this->data[$key]);unset($this->modified[$key]);}protected
 function
-getReference($table,$column){if(array_key_exists($column,$this->data)){$this->access($column);$value=$this->data[$column];$value=$value
+accessColumn($key,$selectColumn=TRUE){if(isset($this->modified[$key])){return;}$this->table->accessColumn($key,$selectColumn);if($this->table->getDataRefreshed()&&!$this->dataRefreshed){$this->data=$this->table[$this->getSignature()]->data;$this->dataRefreshed=TRUE;}}protected
+function
+removeAccessColumn($key){$this->table->removeAccessColumn($key);}protected
+function
+getReference($table,$column){$this->accessColumn($column);if(array_key_exists($column,$this->data)){$value=$this->data[$column];$value=$value
 instanceof
 ActiveRow?$value->getPrimary():$value;$referenced=$this->table->getReferencedTable($table,$column,!empty($this->modified[$column]));$referenced=isset($referenced[$value])?$referenced[$value]:NULL;if(!empty($this->modified[$column])){$this->modified[$column]=0;}return$referenced;}return
 FALSE;}}use
@@ -3589,18 +3604,19 @@ PDO;class
 Selection
 extends
 Nette\Object
-implements\Iterator,\ArrayAccess,\Countable{protected$connection;protected$sqlBuilder;protected$name;protected$primary;protected$primarySequence=FALSE;protected$rows;protected$data;protected$referenced=array();protected$referencing=array();protected$referencingPrototype=array();protected$aggregation=array();protected$accessed;protected$prevAccessed;protected$observeCache=FALSE;protected$checkReferenced=FALSE;protected$keys=array();function
-__construct($table,Nette\Database\Connection$connection){$this->name=$table;$this->connection=$connection;$this->primary=$connection->getDatabaseReflection()->getPrimary($table);$this->sqlBuilder=new
-SqlBuilder($this);}function
+implements\Iterator,\ArrayAccess,\Countable{protected$connection;protected$cache;protected$sqlBuilder;protected$name;protected$primary;protected$primarySequence=FALSE;protected$rows;protected$data;protected$dataRefreshed=FALSE;protected$referenced=array();protected$referencing=array();protected$referencingPrototype=array();protected$aggregation=array();protected$accessedColumns;protected$previousAccessedColumns;protected$observeCache=FALSE;protected$checkReferenced=FALSE;protected$keys=array();function
+__construct($table,Nette\Database\Connection$connection){$this->name=$table;$this->connection=$connection;$reflection=$connection->getDatabaseReflection();$this->primary=$reflection->getPrimary($table);$this->sqlBuilder=new
+SqlBuilder($table,$connection,$reflection);$this->cache=$connection->getCache();}function
 __destruct(){$this->saveCacheState();}function
-__clone(){$this->sqlBuilder=clone$this->sqlBuilder;$this->sqlBuilder->setSelection($this);}function
+__clone(){$this->sqlBuilder=clone$this->sqlBuilder;}function
 getConnection(){return$this->connection;}function
 getName(){return$this->name;}function
 getPrimary(){return$this->primary;}function
 getPrimarySequence(){if($this->primarySequence===FALSE){$this->primarySequence=NULL;$driver=$this->connection->getSupplementalDriver();if($driver->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE)){foreach($driver->getColumns($this->name)as$column){if($column['name']===$this->primary){$this->primarySequence=$column['vendor']['sequence'];break;}}}}return$this->primarySequence;}function
 setPrimarySequence($sequence){$this->primarySequence=$sequence;return$this;}function
-getSql(){return$this->sqlBuilder->buildSelectQuery();}function
-getPreviousAccessed(){$cache=$this->connection->getCache();if($this->rows===NULL&&$cache&&!is_string($this->prevAccessed)){$this->accessed=$this->prevAccessed=$cache->load(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions()));}return$this->prevAccessed;}function
+getSql(){return$this->sqlBuilder->buildSelectQuery($this->getPreviousAccessedColumns());}function
+getPreviousAccessedColumns(){if($this->cache&&$this->previousAccessedColumns===NULL){$this->accessedColumns=$this->previousAccessedColumns=$this->cache->load(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions()));}return
+array_keys(array_filter((array)$this->previousAccessedColumns));}function
 getSqlBuilder(){return$this->sqlBuilder;}function
 get($key){$clone=clone$this;return$clone->find($key)->fetch();}function
 fetch(){$this->execute();$return=current($this->data);next($this->data);return$return;}function
@@ -3622,9 +3638,9 @@ min($column){return$this->aggregation("MIN($column)");}function
 max($column){return$this->aggregation("MAX($column)");}function
 sum($column){return$this->aggregation("SUM($column)");}protected
 function
-execute(){if($this->rows!==NULL){return;}$this->observeCache=TRUE;try{$result=$this->query($this->sqlBuilder->buildSelectQuery());}catch(\PDOException$exception){if(!$this->sqlBuilder->getSelect()&&$this->prevAccessed){$this->prevAccessed='';$this->accessed=array();$result=$this->query($this->sqlBuilder->buildSelectQuery());}else{throw$exception;}}$this->rows=array();$usedPrimary=TRUE;$result->setFetchMode(PDO::FETCH_ASSOC);foreach($result
-as$key=>$row){$row=$this->createRow($result->normalizeRow($row));$primary=$row->getSignature(FALSE);$usedPrimary=$usedPrimary&&$primary;$this->rows[$primary?:$key]=$row;}$this->data=$this->rows;if($usedPrimary&&!is_string($this->accessed)){foreach((array)$this->primary
-as$primary){$this->accessed[$primary]=TRUE;}}}protected
+execute(){if($this->rows!==NULL){return;}$this->observeCache=TRUE;try{$result=$this->query($this->getSql());}catch(\PDOException$exception){if(!$this->sqlBuilder->getSelect()&&$this->previousAccessedColumns){$this->previousAccessedColumns=FALSE;$this->accessedColumns=array();$result=$this->query($this->getSql());}else{throw$exception;}}$this->rows=array();$usedPrimary=TRUE;$result->setFetchMode(PDO::FETCH_ASSOC);foreach($result
+as$key=>$row){$row=$this->createRow($result->normalizeRow($row));$primary=$row->getSignature(FALSE);$usedPrimary=$usedPrimary&&$primary;$this->rows[$primary?:$key]=$row;}$this->data=$this->rows;if($usedPrimary&&$this->accessedColumns!==FALSE){foreach((array)$this->primary
+as$primary){$this->accessedColumns[$primary]=TRUE;}}}protected
 function
 createRow(array$row){return
 new
@@ -3642,13 +3658,12 @@ query($query){return$this->connection->queryArgs($query,$this->sqlBuilder->getPa
 function
 emptyResultSet(){if($this->rows===NULL){return;}$this->rows=NULL;$this->saveCacheState();}protected
 function
-saveCacheState(){if($this->observeCache&&($cache=$this->connection->getCache())&&!$this->sqlBuilder->getSelect()&&$this->accessed!=$this->prevAccessed){$cache->save(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions()),$this->accessed);}}protected
+saveCacheState(){if($this->observeCache&&$this->cache&&!$this->sqlBuilder->getSelect()&&$this->accessedColumns!=$this->previousAccessedColumns){$this->cache->save(array(__CLASS__,$this->name,$this->sqlBuilder->getConditions()),$this->accessedColumns);}}protected
 function
 getRefTable(&$refPath){return$this;}function
-access($key,$cache=TRUE){if($cache===NULL){if(is_array($this->accessed)){$this->accessed[$key]=FALSE;}return
-FALSE;}if($key===NULL){$this->accessed='';}elseif(!is_string($this->accessed)){$this->accessed[$key]=$cache;}if($cache&&!$this->sqlBuilder->getSelect()&&$this->prevAccessed&&($key===NULL||!isset($this->prevAccessed[$key]))){$this->prevAccessed='';$this->emptyResultSet();return
-TRUE;}return
-FALSE;}function
+accessColumn($key,$selectColumn=TRUE){if(!$this->cache){return;}if($key===NULL){$this->accessedColumns=FALSE;}elseif($this->accessedColumns!==FALSE){$this->accessedColumns[$key]=$selectColumn;}if($selectColumn&&!$this->sqlBuilder->getSelect()&&$this->previousAccessedColumns&&($key===NULL||!isset($this->previousAccessedColumns[$key]))){$this->previousAccessedColumns=FALSE;$this->emptyResultSet();$this->dataRefreshed=TRUE;}}function
+removeAccessColumn($key){if($this->cache&&is_array($this->accessedColumns)){$this->accessedColumns[$key]=FALSE;}}function
+getDataRefreshed(){return$this->dataRefreshed;}function
 insert($data){if($data
 instanceof
 Selection){$data=$data->getSql();}elseif($data
@@ -3686,14 +3701,14 @@ select($columns){if(!$this->sqlBuilder->getSelect()){$this->sqlBuilder->addSelec
 parent::select($columns);}function
 order($columns){if(!$this->sqlBuilder->getOrder()){$this->sqlBuilder->addOrder("$this->name.$this->column".(preg_match('~\bDESC\z~i',$columns)?' DESC':''));}return
 parent::order($columns);}function
-aggregation($function){$aggregation=&$this->getRefTable($refPath)->aggregation[$refPath.$function.$this->sqlBuilder->buildSelectQuery().json_encode($this->sqlBuilder->getParameters())];if($aggregation===NULL){$aggregation=array();$selection=$this->createSelectionInstance();$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());$selection->select($function);$selection->select("$this->name.$this->column");$selection->group("$this->name.$this->column");foreach($selection
+aggregation($function){$aggregation=&$this->getRefTable($refPath)->aggregation[$refPath.$function.$this->getSql().json_encode($this->sqlBuilder->getParameters())];if($aggregation===NULL){$aggregation=array();$selection=$this->createSelectionInstance();$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());$selection->select($function);$selection->select("$this->name.$this->column");$selection->group("$this->name.$this->column");foreach($selection
 as$row){$aggregation[$row[$this->column]]=$row;}}if(isset($aggregation[$this->active])){foreach($aggregation[$this->active]as$val){return$val;}}}function
 count($column=NULL){$return=parent::count($column);return
 isset($return)?$return:0;}protected
 function
-execute(){if($this->rows!==NULL){return;}$hash=md5($this->sqlBuilder->buildSelectQuery().json_encode($this->sqlBuilder->getParameters()));$referencing=&$this->getRefTable($refPath)->referencing[$refPath.$hash];$this->rows=&$referencing['rows'];$this->referenced=&$referencing['refs'];$this->accessed=&$referencing['accessed'];$refData=&$referencing['data'];if($refData===NULL){$limit=$this->sqlBuilder->getLimit();$rows=count($this->refTable->rows);if($limit&&$rows>1){$this->sqlBuilder->setLimit(NULL,NULL);}parent::execute();$this->sqlBuilder->setLimit($limit,NULL);$refData=array();$offset=array();foreach($this->rows
+execute(){if($this->rows!==NULL){return;}$hash=md5($this->getSql().json_encode($this->sqlBuilder->getParameters()));$referencing=&$this->getRefTable($refPath)->referencing[$refPath.$hash];$this->rows=&$referencing['rows'];$this->referenced=&$referencing['refs'];$this->accessedColumns=&$referencing['accessed'];$refData=&$referencing['data'];if($refData===NULL){$limit=$this->sqlBuilder->getLimit();$rows=count($this->refTable->rows);if($limit&&$rows>1){$this->sqlBuilder->setLimit(NULL,NULL);}parent::execute();$this->sqlBuilder->setLimit($limit,NULL);$refData=array();$offset=array();foreach((array)$this->rows
 as$key=>$row){$ref=&$refData[$row[$this->column]];$skip=&$offset[$row[$this->column]];if($limit===NULL||$rows<=1||(count($ref)<$limit&&$skip>=$this->sqlBuilder->getOffset())){$ref[$key]=$row;}else{unset($this->rows[$key]);}$skip++;unset($ref,$skip);}}$this->data=&$refData[$this->active];if($this->data===NULL){$this->data=array();}else{foreach($this->data
-as$row){$row->setTable($this);}reset($this->data);}}protected
+as$row){$row->setTable($this);}reset($this->data);$this->checkReferenced=TRUE;}}protected
 function
 getRefTable(&$refPath){$refObj=$this->refTable;$refPath=$this->name.'.';while($refObj
 instanceof
@@ -3703,15 +3718,14 @@ instanceof\Traversable&&!$data
 instanceof
 Selection){$data=iterator_to_array($data);}if(Nette\Utils\Validators::isList($data)){foreach(array_keys($data)as$key){$data[$key][$this->column]=$this->active;}}else{$data[$this->column]=$this->active;}return
 parent::insert($data);}function
-update($data){$builder=$this->sqlBuilder;$this->sqlBuilder=new
-SqlBuilder($this);$this->where($this->column,$this->active);$return=parent::update($data);$this->sqlBuilder=$builder;return$return;}function
-delete(){$builder=$this->sqlBuilder;$this->sqlBuilder=new
-SqlBuilder($this);$this->where($this->column,$this->active);$return=parent::delete();$this->sqlBuilder=$builder;return$return;}}class
+update($data){$builder=$this->sqlBuilder;$this->sqlBuilder=clone$this->sqlBuilder;$this->where($this->column,$this->active);$return=parent::update($data);$this->sqlBuilder=$builder;return$return;}function
+delete(){$builder=$this->sqlBuilder;$this->sqlBuilder=clone$this->sqlBuilder;$this->where($this->column,$this->active);$return=parent::delete();$this->sqlBuilder=$builder;return$return;}}use
+Nette\Database\Connection;use
+Nette\Database\IReflection;class
 SqlBuilder
 extends
-Nette\Object{protected$selection;private$driver;private$driverName;protected$delimitedTable;protected$select=array();protected$where=array();protected$conditions=array();protected$parameters=array();protected$order=array();protected$limit=NULL;protected$offset=NULL;protected$group='';protected$having='';function
-__construct(Selection$selection){$this->selection=$selection;$connection=$selection->getConnection();$this->driver=$connection->getSupplementalDriver();$this->driverName=$connection->getAttribute(\PDO::ATTR_DRIVER_NAME);$this->delimitedTable=$this->tryDelimite($selection->getName());}function
-setSelection(Selection$selection){$this->selection=$selection;}function
+Nette\Object{private$driver;private$driverName;protected$tableName;protected$databaseReflection;protected$delimitedTable;protected$select=array();protected$where=array();protected$conditions=array();protected$parameters=array();protected$order=array();protected$limit=NULL;protected$offset=NULL;protected$group='';protected$having='';function
+__construct($tableName,Connection$connection,IReflection$reflection){$this->tableName=$tableName;$this->databaseReflection=$reflection;$this->driver=$connection->getSupplementalDriver();$this->driverName=$connection->getAttribute(\PDO::ATTR_DRIVER_NAME);$this->delimitedTable=$this->tryDelimite($tableName);}function
 buildInsertQuery(){return"INSERT INTO {$this->delimitedTable}";}function
 buildUpdateQuery(){return"UPDATE{$this->buildTopClause()} {$this->delimitedTable} SET ?".$this->buildConditions();}function
 buildDeleteQuery(){return"DELETE{$this->buildTopClause()} FROM {$this->delimitedTable}".$this->buildConditions();}function
@@ -3734,11 +3748,11 @@ getOffset(){return$this->offset;}function
 setGroup($columns,$having){$this->group=$columns;$this->having=$having;}function
 getGroup(){return$this->group;}function
 getHaving(){return$this->having;}function
-buildSelectQuery(){$join=$this->buildJoins(implode(',',$this->conditions),TRUE);$join+=$this->buildJoins(implode(',',$this->select).",{$this->group},{$this->having},".implode(',',$this->order));$prefix=$join?"{$this->delimitedTable}.":'';if($this->select){$cols=$this->tryDelimite($this->removeExtraTables(implode(', ',$this->select)));}elseif($prevAccessed=$this->selection->getPreviousAccessed()){$cols=array_map(array($this->driver,'delimite'),array_keys(array_filter($prevAccessed)));$cols=$prefix.implode(', '.$prefix,$cols);}elseif($this->group&&!$this->driver->isSupported(ISupplementalDriver::SUPPORT_SELECT_UNGROUPED_COLUMNS)){$cols=$this->tryDelimite($this->removeExtraTables($this->group));}else{$cols=$prefix.'*';}return"SELECT{$this->buildTopClause()} {$cols} FROM {$this->delimitedTable}".implode($join).$this->buildConditions();}function
+buildSelectQuery($columns=NULL){$join=$this->buildJoins(implode(',',$this->conditions),TRUE);$join+=$this->buildJoins(implode(',',$this->select).",{$this->group},{$this->having},".implode(',',$this->order));$prefix=$join?"{$this->delimitedTable}.":'';if($this->select){$cols=$this->tryDelimite($this->removeExtraTables(implode(', ',$this->select)));}elseif($columns){$cols=array_map(array($this->driver,'delimite'),$columns);$cols=$prefix.implode(', '.$prefix,$cols);}elseif($this->group&&!$this->driver->isSupported(ISupplementalDriver::SUPPORT_SELECT_UNGROUPED_COLUMNS)){$cols=$this->tryDelimite($this->removeExtraTables($this->group));}else{$cols=$prefix.'*';}return"SELECT{$this->buildTopClause()} {$cols} FROM {$this->delimitedTable}".implode($join).$this->buildConditions();}function
 getParameters(){return$this->parameters;}protected
 function
-buildJoins($val,$inner=FALSE){$reflection=$this->selection->getConnection()->getDatabaseReflection();$joins=array();preg_match_all('~\\b([a-z][\\w.:]*[.:])([a-z]\\w*|\*)(\\s+IS\\b|\\s*<=>)?~i',$val,$matches);foreach($matches[1]as$names){$parent=$this->selection->getName();if($names!=="$parent."){preg_match_all('~\\b([a-z][\\w]*|\*)([.:])~i',$names,$matches,PREG_SET_ORDER);foreach($matches
-as$match){list(,$name,$delimiter)=$match;if($delimiter===':'){list($table,$primary)=$reflection->getHasManyReference($parent,$name);$column=$reflection->getPrimary($parent);}else{list($table,$column)=$reflection->getBelongsToReference($parent,$name);$primary=$reflection->getPrimary($table);}$joins[$name]=' '.(!isset($joins[$name])&&$inner&&!isset($match[3])?'INNER':'LEFT').' JOIN '.$this->driver->delimite($table).($table!==$name?' AS '.$this->driver->delimite($name):'').' ON '.$this->driver->delimite($parent).'.'.$this->driver->delimite($column).' = '.$this->driver->delimite($name).'.'.$this->driver->delimite($primary);$parent=$name;}}}return$joins;}protected
+buildJoins($val,$inner=FALSE){$joins=array();preg_match_all('~\\b([a-z][\\w.:]*[.:])([a-z]\\w*|\*)(\\s+IS\\b|\\s*<=>)?~i',$val,$matches);foreach($matches[1]as$names){$parent=$parentAlias=$this->tableName;if($names!=="$parent."){preg_match_all('~\\b([a-z][\\w]*|\*)([.:])~i',$names,$matches,PREG_SET_ORDER);foreach($matches
+as$match){list(,$name,$delimiter)=$match;if($delimiter===':'){list($table,$primary)=$this->databaseReflection->getHasManyReference($parent,$name);$column=$this->databaseReflection->getPrimary($parent);}else{list($table,$column)=$this->databaseReflection->getBelongsToReference($parent,$name);$primary=$this->databaseReflection->getPrimary($table);}$joins[$name]=' '.(!isset($joins[$name])&&$inner&&!isset($match[3])?'INNER':'LEFT').' JOIN '.$this->driver->delimite($table).($table!==$name?' AS '.$this->driver->delimite($name):'').' ON '.$this->driver->delimite($parentAlias).'.'.$this->driver->delimite($column).' = '.$this->driver->delimite($name).'.'.$this->driver->delimite($primary);$parent=$table;$parentAlias=$name;}}}return$joins;}protected
 function
 buildConditions(){$return='';$where=$this->where;if($this->limit!==NULL&&$this->driverName==='oci'){$where[]=($this->offset?"rownum > $this->offset AND ":'').'rownum <= '.($this->limit+$this->offset);}if($where){$return.=' WHERE ('.implode(') AND (',$where).')';}if($this->group){$return.=' GROUP BY '.$this->tryDelimite($this->removeExtraTables($this->group));}if($this->having){$return.=' HAVING '.$this->tryDelimite($this->removeExtraTables($this->having));}if($this->order){$return.=' ORDER BY '.$this->tryDelimite($this->removeExtraTables(implode(', ',$this->order)));}if($this->limit!==NULL&&$this->driverName!=='oci'&&$this->driverName!=='dblib'){$return.=" LIMIT $this->limit";if($this->offset!==NULL){$return.=" OFFSET $this->offset";}}return$return;}protected
 function
@@ -4144,7 +4158,7 @@ setValue($value){$this->value=$value;return$this;}function
 getValue(){return$this->value;}function
 isFilled(){return(string)$this->getValue()!=='';}function
 setDefaultValue($value){$form=$this->getForm(FALSE);if(!$form||!$form->isAnchored()||!$form->isSubmitted()){$this->setValue($value);}return$this;}function
-loadHttpData(){$path=explode('[',strtr(str_replace(array('[]',']'),'',$this->getHtmlName()),'.','_'));$this->setValue(Nette\Utils\Arrays::get($this->getForm()->getHttpData(),$path,NULL));}function
+loadHttpData(){$path=explode('[',strtr(str_replace(array('[]',']'),'',$this->getHtmlName()),'.','_'));$this->setValue(Nette\Utils\Arrays::get((array)$this->getForm()->getHttpData(),$path,NULL));}function
 setDisabled($value=TRUE){$this->disabled=(bool)$value;return$this;}function
 isDisabled(){return$this->disabled;}function
 getControl(){$this->setOption('rendered',TRUE);$control=clone$this->control;$control->name=$this->getHtmlName();$control->disabled=$this->disabled;$control->id=$this->getHtmlId();$control->required=$this->isRequired();$rules=self::exportRules($this->rules);$rules=substr(PHP_VERSION_ID>=50400?json_encode($rules,JSON_UNESCAPED_UNICODE):json_encode($rules),1,-1);$rules=preg_replace('#"([a-z0-9_]+)":#i','$1:',$rules);$rules=preg_replace('#(?<!\\\\)"(?!:[^a-z])([^\\\\\',]*)"#i',"'$1'",$rules);$control->data('nette-rules',$rules?$rules:NULL);return$control;}function
@@ -5058,9 +5072,9 @@ static($compiler);$me->addMacro('form','Nette\Latte\Macros\FormMacros::renderFor
 macroLabel(MacroNode$node,PhpWriter$writer){$cmd='$_input = is_object(%node.word) ? %node.word : $_form[%node.word]; if ($_label = $_input->getLabel()) echo $_label->addAttributes(%node.array)';if($node->isEmpty=(substr($node->args,-1)==='/')){$node->setArgs(substr($node->args,0,-1));return$writer->write($cmd);}else{return$writer->write($cmd.'->startTag()');}}function
 macroAttrInput(MacroNode$node,PhpWriter$writer){if($node->htmlNode->attrs){$reset=array_fill_keys(array_keys($node->htmlNode->attrs),NULL);return$writer->write('$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%var)->attributes()',$reset);}return$writer->write('$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->attributes()');}static
 function
-renderFormBegin(Form$form,array$attrs){$el=$form->getElementPrototype();$el->action=(string)$el->action;$el=clone$el;if(strcasecmp($form->getMethod(),'get')===0){list($el->action)=explode('?',$el->action,2);}echo$el->addAttributes($attrs)->startTag();}static
+renderFormBegin(Form$form,array$attrs){$el=$form->getElementPrototype();$el->action=$action=(string)$el->action;$el=clone$el;if(strcasecmp($form->getMethod(),'get')===0){list($el->action)=explode('?',$action,2);if(($i=strpos($action,'#'))!==FALSE){$el->action.=substr($action,$i);}}echo$el->addAttributes($attrs)->startTag();}static
 function
-renderFormEnd(Form$form){$s='';if(strcasecmp($form->getMethod(),'get')===0){$url=explode('?',$form->getElementPrototype()->action,2);if(isset($url[1])){foreach(preg_split('#[;&]#',$url[1])as$param){$parts=explode('=',$param,2);$name=urldecode($parts[0]);if(!isset($form[$name])){$s.=Nette\Utils\Html::el('input',array('type'=>'hidden','name'=>$name,'value'=>urldecode($parts[1])));}}}}foreach($form->getComponents(TRUE,'Nette\Forms\Controls\HiddenField')as$control){if(!$control->getOption('rendered')){$s.=$control->getControl();}}if(iterator_count($form->getComponents(TRUE,'Nette\Forms\Controls\TextInput'))<2){$s.='<!--[if IE]><input type=IEbug disabled style="display:none"><![endif]-->';}echo($s?"<div>$s</div>\n":'').$form->getElementPrototype()->endTag()."\n";}}class
+renderFormEnd(Form$form){$s='';if(strcasecmp($form->getMethod(),'get')===0){$url=explode('?',$form->getElementPrototype()->action,2);if(isset($url[1])){list($url[1])=explode('#',$url[1],2);foreach(preg_split('#[;&]#',$url[1])as$param){$parts=explode('=',$param,2);$name=urldecode($parts[0]);if(!isset($form[$name])){$s.=Nette\Utils\Html::el('input',array('type'=>'hidden','name'=>$name,'value'=>urldecode($parts[1])));}}}}foreach($form->getComponents(TRUE,'Nette\Forms\Controls\HiddenField')as$control){if(!$control->getOption('rendered')){$s.=$control->getControl();}}if(iterator_count($form->getComponents(TRUE,'Nette\Forms\Controls\TextInput'))<2){$s.='<!--[if IE]><input type=IEbug disabled style="display:none"><![endif]-->';}echo($s?"<div>$s</div>\n":'').$form->getElementPrototype()->endTag()."\n";}}class
 UIMacros
 extends
 MacroSet{private$namedBlocks=array();private$extends;static
@@ -5688,9 +5702,9 @@ Nette\Diagnostics\IBarPanel{private$user;function
 __construct(Nette\Security\User$user){$this->user=$user;}function
 getTab(){ob_start();?>
 <?php if($this->user->isLoggedIn()):?>
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAJkSURBVDjLhVLPSxRhGH5mf8yOs9O6aa2b6BJhsW3RilAXDSW65clDdgwkEBH/gIiI6FC3uoRBQYeooP4Aw9isQ2xG5YZEVFrINmnFto67s7sz33xf76wedEfwgxdm4H1+vO/zSkIINL7Bax/PpxLRkXhUTVuMY/7Hci4z++2e/njofmNvYDvwqe726/2pcJsa9MMhgd7D4T5NUQ8GBibBZka3kPgaCZKk7IKbVT8qNodpcUToe6g33tadOjCyo4NYREkrpGyYHLYDMEfArHFoioTE/o70jgRVC3AIZDMqLogA9fKR12qVefblGWHui54rmDZCsoSaLVClUkMSVlYZZl7P53YkyGQ/T9+dWqoaFY6K5ZaDEo1w42GOVWaz7xv7pc0x9kxkh/uOxa6c6JSSnDz/MgJgFGM0ZCLALTzKrhZePnh1S+gXr3p2cHQ0kx7oSVwePtmWbNUCKFsCKb6+i3K1GXKQY2JfrCW/XJqQfGNvBL/9bMsILRF1/MzxWGo3RfbHoK3VjUkgDlhEsqDXEKJ0Lgx2tSJ56JJnB13tLf3NYR9+F20CCwJSuSnw9W8hJHxdMtHeqiAYix/xEGia0ilLPuRXKnVVx41vYwRG6XEOGGsMst8PWVF3eXZgWUyixChvCc6GMiNwja7RJjR3x3GLRFwyj4PFvPFzQTehNUn1f4e6LIfXCdxDovGR2BvEh+9lVArFNQ/BdCY/Pjq5eGfqbQGC1IPkpEkGwnREMvl09/DkxQpuPs0beDd3ets7cF/HuefL8ViU7YnIYbpcTS+Y0P9apXLe+IeSWRSfzvZs7v8PV6U0ly704DwAAAAASUVORK5CYII=" style="margin-right:0" />
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAJkSURBVDjLhVLPSxRhGH5mf8yOs9O6aa2b6BJhsW3RilAXDSW65clDdgwkEBH/gIiI6FC3uoRBQYeooP4Aw9isQ2xG5YZEVFrINmnFto67s7sz33xf76wedEfwgxdm4H1+vO/zSkIINL7Bax/PpxLRkXhUTVuMY/7Hci4z++2e/njofmNvYDvwqe726/2pcJsa9MMhgd7D4T5NUQ8GBibBZka3kPgaCZKk7IKbVT8qNodpcUToe6g33tadOjCyo4NYREkrpGyYHLYDMEfArHFoioTE/o70jgRVC3AIZDMqLogA9fKR12qVefblGWHui54rmDZCsoSaLVClUkMSVlYZZl7P53YkyGQ/T9+dWqoaFY6K5ZaDEo1w42GOVWaz7xv7pc0x9kxkh/uOxa6c6JSSnDz/MgJgFGM0ZCLALTzKrhZePnh1S+gXr3p2cHQ0kx7oSVwePtmWbNUCKFsCKb6+i3K1GXKQY2JfrCW/XJqQfGNvBL/9bMsILRF1/MzxWGo3RfbHoK3VjUkgDlhEsqDXEKJ0Lgx2tSJ56JJnB13tLf3NYR9+F20CCwJSuSnw9W8hJHxdMtHeqiAYix/xEGia0ilLPuRXKnVVx41vYwRG6XEOGGsMst8PWVF3eXZgWUyixChvCc6GMiNwja7RJjR3x3GLRFwyj4PFvPFzQTehNUn1f4e6LIfXCdxDovGR2BvEh+9lVArFNQ/BdCY/Pjq5eGfqbQGC1IPkpEkGwnREMvl09/DkxQpuPs0beDd3ets7cF/HuefL8ViU7YnIYbpcTS+Y0P9apXLe+IeSWRSfzvZs7v8PV6U0ly704DwAAAAASUVORK5CYII=" style="margin-right:0" />&nbsp;
 <?php else:?>
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAE4SURBVCjPZdBLSwIBGIXh/lHQb4guyza1CEIqpNoIQdHKXEQQrkS6IUSLFhYFtpCIwUAG07IstTTnqjNTjnSRZmPg4m3lpYZvd84DB74BBjq36zkXk07CORB9nl7aVydtkwZ1NKL2tMcFYqLJOxYGb1QIiC5w5dhYGOgo6EQcFxCcOjV0VCRUdtxgX1R4RaZClTzz7okF/2FLo0SRChvtkdA/sDl1Wk6RQuASAYHg54S/D6wPnjzrNLAwqVJBJsfax/BoFwQjZWw0LEx0SmQocsGk2AVHko6MhoGByhMZEqSZ++qCs5bBLSo1qkgUSBMny1K7C45/qtwho6NQ4oFr4mRZ7IGwmqWAjMILee65IUWMmd6Ed3xlL4qEjkqZR9KE8X2PDf151Kq9ZW03Q+1Ae7np1WZznfwXGfNkzblrzUIAAAAASUVORK5CYII=" style="margin-right:0" />
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAE4SURBVCjPZdBLSwIBGIXh/lHQb4guyza1CEIqpNoIQdHKXEQQrkS6IUSLFhYFtpCIwUAG07IstTTnqjNTjnSRZmPg4m3lpYZvd84DB74BBjq36zkXk07CORB9nl7aVydtkwZ1NKL2tMcFYqLJOxYGb1QIiC5w5dhYGOgo6EQcFxCcOjV0VCRUdtxgX1R4RaZClTzz7okF/2FLo0SRChvtkdA/sDl1Wk6RQuASAYHg54S/D6wPnjzrNLAwqVJBJsfax/BoFwQjZWw0LEx0SmQocsGk2AVHko6MhoGByhMZEqSZ++qCs5bBLSo1qkgUSBMny1K7C45/qtwho6NQ4oFr4mRZ7IGwmqWAjMILee65IUWMmd6Ed3xlL4qEjkqZR9KE8X2PDf151Kq9ZW03Q+1Ae7np1WZznfwXGfNkzblrzUIAAAAASUVORK5CYII=" style="margin-right:0" />&nbsp;
 <?php endif?>
 <?php
 return
@@ -6141,7 +6155,21 @@ Neon
 extends
 Nette\Object{const
 BLOCK=1;private
-static$patterns=array('\'[^\'\n]*\'|"(?:\\\\.|[^"\\\\\n])*"','-(?=\s|$)|:(?=[\s,\]})]|$)|[,=[\]{}()]','?:#.*','\n[\t ]*','[^#"\',=[\]{}()\x00-\x20!`](?:[^#,:=\]})(\x00-\x1F]+|:(?![\s,\]})]|$)|(?<!\s)#)*(?<!\s)','?:[\t ]+');private
+static$patterns=array('
+			\'[^\'\n]*\' |
+			"(?: \\\\. | [^"\\\\\n] )*"
+		','
+			-(?= \s | $ ) |
+			:(?= [\s,\]})] | $ ) |
+			[,=[\]{}()]
+		','?:\#.*','\n[\t\ ]*','
+			[^#"\',=[\]{}()\x00-\x20!`]
+			(?:
+				[^,:=\]})(\x00-\x20]+ |
+				:(?! [\s,\]})] | $ ) |
+				[\ \t]+ [^#,:=\]})(\x00-\x20]
+			)*
+		','?:[\t\ ]+');private
 static$tokenizer;private
 static$brackets=array('['=>']','{'=>'}','('=>')');private$n=0;private$indentTabs;static
 function
@@ -6152,14 +6180,14 @@ NeonEntity){return
 self::encode($var->value).'('.substr(self::encode($var->attributes),1,-1).')';}if(is_object($var)){$obj=$var;$var=array();foreach($obj
 as$k=>$v){$var[$k]=$v;}}if(is_array($var)){$isList=Validators::isList($var);$s='';if($options&self::BLOCK){if(count($var)===0){return"[]";}foreach($var
 as$k=>$v){$v=self::encode($v,self::BLOCK);$s.=($isList?'-':self::encode($k).':').(Strings::contains($v,"\n")?"\n\t".str_replace("\n","\n\t",$v):' '.$v)."\n";continue;}return$s;}else{foreach($var
-as$k=>$v){$s.=($isList?'':self::encode($k).': ').self::encode($v).', ';}return($isList?'[':'{').substr($s,0,-2).($isList?']':'}');}}elseif(is_string($var)&&!is_numeric($var)&&!preg_match('~[\x00-\x1F]|^\d{4}|^(true|false|yes|no|on|off|null)\z~i',$var)&&preg_match('~^'.self::$patterns[4].'\z~',$var)){return$var;}elseif(is_float($var)){$var=var_export($var,TRUE);return
+as$k=>$v){$s.=($isList?'':self::encode($k).': ').self::encode($v).', ';}return($isList?'[':'{').substr($s,0,-2).($isList?']':'}');}}elseif(is_string($var)&&!is_numeric($var)&&!preg_match('~[\x00-\x1F]|^\d{4}|^(true|false|yes|no|on|off|null)\z~i',$var)&&preg_match('~^'.self::$patterns[4].'\z~x',$var)){return$var;}elseif(is_float($var)){$var=var_export($var,TRUE);return
 Strings::contains($var,'.')?$var:$var.'.0';}else{return
 json_encode($var);}}static
 function
 decode($input){if(!is_string($input)){throw
 new
 Nette\InvalidArgumentException("Argument must be a string, ".gettype($input)." given.");}if(!self::$tokenizer){self::$tokenizer=new
-Tokenizer(self::$patterns,'mi');}$input=str_replace("\r",'',$input);self::$tokenizer->tokenize($input);$parser=new
+Tokenizer(self::$patterns,'mix');}if(substr($input,0,3)==="\xEF\xBB\xBF"){$input=substr($input,3);}$input=str_replace("\r",'',$input);self::$tokenizer->tokenize($input);$parser=new
 static;$res=$parser->parse(0);while(isset(self::$tokenizer->tokens[$parser->n])){if(self::$tokenizer->tokens[$parser->n][0]==="\n"){$parser->n++;}else{$parser->error();}}return$res;}private
 function
 parse($indent=NULL,$result=NULL){$inlineParser=$indent===NULL;$value=$key=$object=NULL;$hasValue=$hasKey=FALSE;$tokens=self::$tokenizer->tokens;$n=&$this->n;$count=count($tokens);for(;$n<$count;$n++){$t=$tokens[$n];if($t===','){if((!$hasKey&&!$hasValue)||!$inlineParser){$this->error();}$this->addValue($result,$hasKey,$key,$hasValue?$value:NULL);$hasKey=$hasValue=FALSE;}elseif($t===':'||$t==='='){if($hasKey||!$hasValue){$this->error();}if(is_array($value)||is_object($value)){$this->error('Unacceptable key');}$key=(string)$value;$hasKey=TRUE;$hasValue=FALSE;}elseif($t==='-'){if($hasKey||$hasValue||$inlineParser){$this->error();}$key=NULL;$hasKey=TRUE;}elseif(isset(self::$brackets[$t])){if($hasValue){if($t!=='('){$this->error();}$n++;$entity=new
@@ -6168,7 +6196,7 @@ Nette\DateTime($t);}else{$value=$t;}$hasValue=TRUE;}}if($inlineParser){if($hasKe
 function
 addValue(&$result,$hasKey,$key,$value){if($hasKey){if($result&&array_key_exists($key,$result)){$this->error("Duplicated key '$key'");}$result[$key]=$value;}else{$result[]=$value;}}private
 function
-cbString($m){static$mapping=array('t'=>"\t",'n'=>"\n",'"'=>'"','\\'=>'\\','/'=>'/','_'=>"\xc2\xa0");$sq=$m[0];if(isset($mapping[$sq[1]])){return$mapping[$sq[1]];}elseif($sq[1]==='u'&&strlen($sq)===6){return
+cbString($m){static$mapping=array('t'=>"\t",'n'=>"\n",'r'=>"\r",'f'=>"\x0C",'b'=>"\x08",'"'=>'"','\\'=>'\\','/'=>'/','_'=>"\xc2\xa0");$sq=$m[0];if(isset($mapping[$sq[1]])){return$mapping[$sq[1]];}elseif($sq[1]==='u'&&strlen($sq)===6){return
 Strings::chr(hexdec(substr($sq,2)));}elseif($sq[1]==='x'&&strlen($sq)===4){return
 chr(hexdec(substr($sq,2)));}else{$this->error("Invalid escaping sequence $sq");}}private
 function
@@ -6310,7 +6338,7 @@ function_exists('mb_substr')?mb_substr($s,$start,$length,'UTF-8'):iconv_substr($
 function
 normalize($s){$s=str_replace("\r\n","\n",$s);$s=strtr($s,"\r","\n");$s=preg_replace('#[\x00-\x08\x0B-\x1F\x7F]+#','',$s);$s=preg_replace('#[\t ]+$#m','',$s);$s=trim($s,"\n");return$s;}static
 function
-toAscii($s){$s=preg_replace('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{2FF}\x{370}-\x{10FFFF}]#u','',$s);$s=strtr($s,'`\'"^~',"\x01\x02\x03\x04\x05");if(ICONV_IMPL==='glibc'){$s=@iconv('UTF-8','WINDOWS-1250//TRANSLIT',$s);$s=strtr($s,"\xa5\xa3\xbc\x8c\xa7\x8a\xaa\x8d\x8f\x8e\xaf\xb9\xb3\xbe\x9c\x9a\xba\x9d\x9f\x9e"."\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3"."\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8"."\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf8\xf9\xfa\xfb\xfc\xfd\xfe","ALLSSSSTZZZallssstzzzRAAAALCCCEEEEIIDDNNOOOOxRUUUUYTsraaaalccceeeeiiddnnooooruuuuyt");}else{$s=@iconv('UTF-8','ASCII//TRANSLIT',$s);}$s=str_replace(array('`',"'",'"','^','~'),'',$s);return
+toAscii($s){$s=preg_replace('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{2FF}\x{370}-\x{10FFFF}]#u','',$s);$s=strtr($s,'`\'"^~',"\x01\x02\x03\x04\x05");if(ICONV_IMPL==='glibc'){$s=@iconv('UTF-8','WINDOWS-1250//TRANSLIT',$s);$s=strtr($s,"\xa5\xa3\xbc\x8c\xa7\x8a\xaa\x8d\x8f\x8e\xaf\xb9\xb3\xbe\x9c\x9a\xba\x9d\x9f\x9e"."\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3"."\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8"."\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf8\xf9\xfa\xfb\xfc\xfd\xfe\x96","ALLSSSSTZZZallssstzzzRAAAALCCCEEEEIIDDNNOOOOxRUUUUYTsraaaalccceeeeiiddnnooooruuuuyt-");}else{$s=@iconv('UTF-8','ASCII//TRANSLIT',$s);}$s=str_replace(array('`',"'",'"','^','~'),'',$s);return
 strtr($s,"\x01\x02\x03\x04\x05",'`\'"^~');}static
 function
 webalize($s,$charlist=NULL,$lower=TRUE){$s=self::toAscii($s);if($lower){$s=strtolower($s);}$s=preg_replace('#[^a-z0-9'.preg_quote($charlist,'#').']+#i','-',$s);$s=trim($s,'-');return$s;}static
@@ -6351,9 +6379,11 @@ function
 reverse($s){return@iconv('UTF-32LE','UTF-8',strrev(@iconv('UTF-8','UTF-32BE',$s)));}static
 function
 random($length=10,$charlist='0-9a-z'){$charlist=str_shuffle(preg_replace_callback('#.-.#',function($m){return
-implode('',range($m[0][0],$m[0][2]));},$charlist));$chLen=strlen($charlist);$s='';for($i=0;$i<$length;$i++){if($i
+implode('',range($m[0][0],$m[0][2]));},$charlist));$chLen=strlen($charlist);static$rand3;if(!$rand3){$rand3=md5(serialize($_SERVER),TRUE);}$s='';for($i=0;$i<$length;$i++){if($i
 %
-5===0){$rand=lcg_value();$rand2=microtime(TRUE);}$rand*=$chLen;$s.=$charlist[($rand+$rand2)%$chLen];$rand-=(int)$rand;}return$s;}static
+5===0){list($rand,$rand2)=explode(' ',microtime());$rand+=lcg_value();}$rand*=$chLen;$s.=$charlist[($rand+$rand2+ord($rand3[$i
+%
+strlen($rand3)]))%$chLen];$rand-=(int)$rand;}return$s;}static
 function
 split($subject,$pattern,$flags=0){set_error_handler(function($severity,$message)use($pattern){restore_error_handler();throw
 new

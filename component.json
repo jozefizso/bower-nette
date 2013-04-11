@@ -1,6 +1,6 @@
 {
     "name": "nette",
-    "version": "2.0.7",
+    "version": "2.0.8",
     "keywords": ["framework", "mvc", "debugging", "templating", "database", "dbal", "forms", "latte", "neon", "mailing", "images", "micro"],
     "main": [
         "Nette/loader.php"

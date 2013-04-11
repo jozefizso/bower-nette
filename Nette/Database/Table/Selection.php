@@ -31,6 +31,9 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	/** @var Nette\Database\Connection */
 	protected $connection;
 
+	/** @var Nette\Caching\Cache */
+	protected $cache;
+
 	/** @var SqlBuilder */
 	protected $sqlBuilder;
 
@@ -49,6 +52,9 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	/** @var ActiveRow[] modifiable data in [primary key => ActiveRow] format */
 	protected $data;
 
+	/** @var bool */
+	protected $dataRefreshed = FALSE;
+
 	/** @var Selection[] */
 	protected $referenced = array();
 
@@ -62,10 +68,10 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	protected $aggregation = array();
 
 	/** @var array of touched columns */
-	protected $accessed;
+	protected $accessedColumns;
 
 	/** @var array of earlier touched columns */
-	protected $prevAccessed;
+	protected $previousAccessedColumns;
 
 	/** @var bool should instance observe accessed columns caching */
 	protected $observeCache = FALSE;
@@ -87,8 +93,10 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	{
 		$this->name = $table;
 		$this->connection = $connection;
-		$this->primary = $connection->getDatabaseReflection()->getPrimary($table);
-		$this->sqlBuilder = new SqlBuilder($this);
+		$reflection = $connection->getDatabaseReflection();
+		$this->primary = $reflection->getPrimary($table);
+		$this->sqlBuilder = new SqlBuilder($table, $connection, $reflection);
+		$this->cache = $connection->getCache();
 	}
 
 
@@ -103,7 +111,6 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	public function __clone()
 	{
 		$this->sqlBuilder = clone $this->sqlBuilder;
-		$this->sqlBuilder->setSelection($this);
 	}
 
 
@@ -179,7 +186,7 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	 */
 	public function getSql()
 	{
-		return $this->sqlBuilder->buildSelectQuery();
+		return $this->sqlBuilder->buildSelectQuery($this->getPreviousAccessedColumns());
 	}
 
 
@@ -189,14 +196,13 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	 * @internal
 	 * @return array|false
 	 */
-	public function getPreviousAccessed()
+	public function getPreviousAccessedColumns()
 	{
-		$cache = $this->connection->getCache();
-		if ($this->rows === NULL && $cache && !is_string($this->prevAccessed)) {
-			$this->accessed = $this->prevAccessed = $cache->load(array(__CLASS__, $this->name, $this->sqlBuilder->getConditions()));
+		if ($this->cache && $this->previousAccessedColumns === NULL) {
+			$this->accessedColumns = $this->previousAccessedColumns = $this->cache->load(array(__CLASS__, $this->name, $this->sqlBuilder->getConditions()));
 		}
 
-		return $this->prevAccessed;
+		return array_keys(array_filter((array) $this->previousAccessedColumns));
 	}
 
 
@@ -473,13 +479,13 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 		$this->observeCache = TRUE;
 
 		try {
-			$result = $this->query($this->sqlBuilder->buildSelectQuery());
+			$result = $this->query($this->getSql());
 
 		} catch (\PDOException $exception) {
-			if (!$this->sqlBuilder->getSelect() && $this->prevAccessed) {
-				$this->prevAccessed = '';
-				$this->accessed = array();
-				$result = $this->query($this->sqlBuilder->buildSelectQuery());
+			if (!$this->sqlBuilder->getSelect() && $this->previousAccessedColumns) {
+				$this->previousAccessedColumns = FALSE;
+				$this->accessedColumns = array();
+				$result = $this->query($this->getSql());
 			} else {
 				throw $exception;
 			}
@@ -496,9 +502,9 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 		}
 		$this->data = $this->rows;
 
-		if ($usedPrimary && !is_string($this->accessed)) {
+		if ($usedPrimary && $this->accessedColumns !== FALSE) {
 			foreach ((array) $this->primary as $primary) {
-				$this->accessed[$primary] = TRUE;
+				$this->accessedColumns[$primary] = TRUE;
 			}
 		}
 	}
@@ -547,8 +553,8 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 
 	protected function saveCacheState()
 	{
-		if ($this->observeCache && ($cache = $this->connection->getCache()) && !$this->sqlBuilder->getSelect() && $this->accessed != $this->prevAccessed) {
-			$cache->save(array(__CLASS__, $this->name, $this->sqlBuilder->getConditions()), $this->accessed);
+		if ($this->observeCache && $this->cache && !$this->sqlBuilder->getSelect() && $this->accessedColumns != $this->previousAccessedColumns) {
+			$this->cache->save(array(__CLASS__, $this->name, $this->sqlBuilder->getConditions()), $this->accessedColumns);
 		}
 	}
 
@@ -567,33 +573,50 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 
 	/**
 	 * @internal
-	 * @param  string column name
-	 * @param  bool|NULL TRUE - cache, FALSE - don't cache, NULL - remove
-	 * @return bool
+	 * @param  string|NULL column name or (NULL to reload all columns & disable columns cache)
+	 * @param  bool
 	 */
-	public function access($key, $cache = TRUE)
+	public function accessColumn($key, $selectColumn = TRUE)
 	{
-		if ($cache === NULL) {
-			if (is_array($this->accessed)) {
-				$this->accessed[$key] = FALSE;
-			}
-			return FALSE;
+		if (!$this->cache) {
+			return;
 		}
 
 		if ($key === NULL) {
-			$this->accessed = '';
-
-		} elseif (!is_string($this->accessed)) {
-			$this->accessed[$key] = $cache;
+			$this->accessedColumns = FALSE;
+		} elseif ($this->accessedColumns !== FALSE) {
+			$this->accessedColumns[$key] = $selectColumn;
 		}
 
-		if ($cache && !$this->sqlBuilder->getSelect() && $this->prevAccessed && ($key === NULL || !isset($this->prevAccessed[$key]))) {
-			$this->prevAccessed = '';
+		if ($selectColumn && !$this->sqlBuilder->getSelect() && $this->previousAccessedColumns && ($key === NULL || !isset($this->previousAccessedColumns[$key]))) {
+			$this->previousAccessedColumns = FALSE;
 			$this->emptyResultSet();
-			return TRUE;
+			$this->dataRefreshed = TRUE;
 		}
+	}
 
-		return FALSE;
+
+
+	/**
+	 * @internal
+	 * @param  string
+	 */
+	public function removeAccessColumn($key)
+	{
+		if ($this->cache && is_array($this->accessedColumns)) {
+			$this->accessedColumns[$key] = FALSE;
+		}
+	}
+
+
+
+	/**
+	 * Returns if selection requeried for more columns.
+	 * @return bool
+	 */
+	public function getDataRefreshed()
+	{
+		return $this->dataRefreshed;
 	}
 
 
