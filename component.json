@@ -1,0 +1,30 @@
+{
+    "name": "nette",
+    "version": "2.0.0",
+    "keywords": ["framework", "mvc", "debugging", "templating", "database", "dbal", "forms", "latte", "neon", "mailing", "images", "micro"],
+    "main": [
+        "Nette/loader.php"
+    ],
+    "homepage": "http://nette.org",
+    "author": {
+        "name": "David Grudl, Nette Community"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/jozefizso/bower-nette.git"
+    },
+    "licenses": [
+        {
+            "type": "BSD-3-Clause",
+            "url": "http://opensource.org/licenses/BSD-3-Clause"
+        },
+        {
+            "type": "GPL-2.0",
+            "url": "http://www.gnu.org/licenses/gpl-2.0.html"
+        },
+        {
+            "type": "GPL-3.0",
+            "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+        }
+    ]
+}
