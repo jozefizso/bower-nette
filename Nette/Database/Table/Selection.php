@@ -230,7 +230,7 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	public function get($key)
 	{
 		$clone = clone $this;
-		return $clone->find($key)->fetch();
+		return $clone->wherePrimary($key)->fetch();
 	}
 
 
@@ -285,11 +285,22 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 
 
 	/**
-	 * Selects by primary key.
-	 * @param  mixed
+	 * Method is deprecated, use wherePrimary() instead.
 	 * @return Selection provides a fluent interface
 	 */
 	public function find($key)
+	{
+		return $this->wherePrimary($key);
+	}
+
+
+
+	/**
+	 * Adds condition for primary key.
+	 * @param  mixed
+	 * @return Selection provides a fluent interface
+	 */
+	public function wherePrimary($key)
 	{
 		if (is_array($this->primary) && Nette\Utils\Validators::isList($key)) {
 			foreach ($this->primary as $i => $primary) {
@@ -584,6 +595,7 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 
 		if ($key === NULL) {
 			$this->accessedColumns = FALSE;
+			$currentKey = key($this->data);
 		} elseif ($this->accessedColumns !== FALSE) {
 			$this->accessedColumns[$key] = $selectColumn;
 		}
@@ -592,6 +604,14 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 			$this->previousAccessedColumns = FALSE;
 			$this->emptyResultSet();
 			$this->dataRefreshed = TRUE;
+
+			if ($key === NULL) {
+				// we need to move iterator in resultset
+				$this->execute();
+				while (key($this->data) !== $currentKey) {
+					next($this->data);
+				}
+			}
 		}
 	}
 
@@ -717,8 +737,9 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 			$this->checkReferenced = FALSE;
 			$keys = array();
 			foreach ($this->rows as $row) {
-				if ($row[$column] === NULL)
+				if ($row[$column] === NULL) {
 					continue;
+				}
 
 				$key = $row[$column] instanceof ActiveRow ? $row[$column]->getPrimary() : $row[$column];
 				$keys[$key] = TRUE;
@@ -825,7 +846,7 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	public function offsetSet($key, $value)
 	{
 		$this->execute();
-		$this->data[$key] = $value;
+		$this->rows[$key] = $value;
 	}
 
 
@@ -838,7 +859,7 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	public function offsetGet($key)
 	{
 		$this->execute();
-		return $this->data[$key];
+		return $this->rows[$key];
 	}
 
 
@@ -851,7 +872,7 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	public function offsetExists($key)
 	{
 		$this->execute();
-		return isset($this->data[$key]);
+		return isset($this->rows[$key]);
 	}
 
 
@@ -864,7 +885,7 @@ class Selection extends Nette\Object implements \Iterator, \ArrayAccess, \Counta
 	public function offsetUnset($key)
 	{
 		$this->execute();
-		unset($this->data[$key]);
+		unset($this->rows[$key], $this->data[$key]);
 	}
 
 }
