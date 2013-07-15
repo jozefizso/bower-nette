@@ -14,7 +14,6 @@ namespace Nette;
 use Nette;
 
 
-
 /**
  * The Nette Framework (http://nette.org)
  *
@@ -25,12 +24,11 @@ final class Framework
 
 	/** Nette Framework version identification */
 	const NAME = 'Nette Framework',
-		VERSION = '2.0.10',
-		REVISION = 'c0332ac released on 2013-03-08';
+		VERSION = '2.0.11',
+		REVISION = 'dc83a21 released on 2013-07-11';
 
 	/** @var bool set to TRUE if your host has disabled function ini_set */
 	public static $iAmUsingBadHost = FALSE;
-
 
 
 	/**

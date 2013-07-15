@@ -15,7 +15,6 @@ use Nette,
 	Nette\Utils\Strings;
 
 
-
 /**
  * Current HTTP request factory.
  *
@@ -36,17 +35,15 @@ class RequestFactory extends Nette\Object
 	private $encoding;
 
 
-
 	/**
 	 * @param  string
-	 * @return RequestFactory  provides a fluent interface
+	 * @return self
 	 */
 	public function setEncoding($encoding)
 	{
 		$this->encoding = $encoding;
 		return $this;
 	}
-
 
 
 	/**

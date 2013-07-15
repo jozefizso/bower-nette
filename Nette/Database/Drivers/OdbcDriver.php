@@ -14,7 +14,6 @@ namespace Nette\Database\Drivers;
 use Nette;
 
 
-
 /**
  * Supplemental ODBC database driver.
  *
@@ -26,16 +25,13 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	private $connection;
 
 
-
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
 	}
 
 
-
 	/********************* SQL ****************d*g**/
-
 
 
 	/**
@@ -47,7 +43,6 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	}
 
 
-
 	/**
 	 * Formats boolean for use in a SQL statement.
 	 */
@@ -57,7 +52,6 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	}
 
 
-
 	/**
 	 * Formats date-time for use in a SQL statement.
 	 */
@@ -65,7 +59,6 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	{
 		return $value->format("#m/d/Y H:i:s#");
 	}
-
 
 
 	/**
@@ -78,11 +71,10 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	}
 
 
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(& $sql, $limit, $offset)
 	{
 		if ($limit >= 0) {
 			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
@@ -94,7 +86,6 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	}
 
 
-
 	/**
 	 * Normalizes result row.
 	 */
@@ -104,9 +95,7 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	}
 
 
-
 	/********************* reflection ****************d*g**/
-
 
 
 	/**
@@ -118,7 +107,6 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	}
 
 
-
 	/**
 	 * Returns metadata for all columns in a table.
 	 */
@@ -126,7 +114,6 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	{
 		throw new Nette\NotImplementedException;
 	}
-
 
 
 	/**
@@ -138,7 +125,6 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	}
 
 
-
 	/**
 	 * Returns metadata for all foreign keys in a table.
 	 */
@@ -146,7 +132,6 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	{
 		throw new Nette\NotImplementedException;
 	}
-
 
 
 	/**

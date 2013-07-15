@@ -14,7 +14,6 @@ namespace Nette\Diagnostics;
 use Nette;
 
 
-
 /**
  * Debugger: displays and logs errors.
  *
@@ -138,7 +137,6 @@ final class Debugger
 		CRITICAL = 'critical';
 
 
-
 	/**
 	 * Static class - cannot be instantiated.
 	 */
@@ -146,7 +144,6 @@ final class Debugger
 	{
 		throw new Nette\StaticClassException;
 	}
-
 
 
 	/**
@@ -210,9 +207,7 @@ final class Debugger
 	}
 
 
-
 	/********************* errors and exceptions reporting ****************d*g**/
-
 
 
 	/**
@@ -292,7 +287,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Is Debug enabled?
 	 * @return bool
@@ -301,7 +295,6 @@ final class Debugger
 	{
 		return self::$enabled;
 	}
-
 
 
 	/**
@@ -326,7 +319,7 @@ final class Debugger
 				: get_class($exception) . ": " . $exception->getMessage())
 				. " in " . $exception->getFile() . ":" . $exception->getLine();
 
-			$hash = md5($exception );
+			$hash = md5(preg_replace('~(Resource id #)\d+~', '$1', $exception ));
 			$exceptionFilename = "exception-" . @date('Y-m-d-H-i-s') . "-$hash.html";
 			foreach (new \DirectoryIterator(self::$logDirectory) as $entry) {
 				if (strpos($entry, $hash)) {
@@ -359,7 +352,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Shutdown handler to catch fatal errors and execute of the planned activities.
 	 * @return void
@@ -390,7 +382,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Handler to catch uncaught exception.
 	 * @param  \Exception
@@ -401,7 +392,8 @@ final class Debugger
 	{
 		if (!headers_sent()) { // for PHP < 5.2.4
 			$protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
-			header($protocol . ' 500', TRUE, 500);
+			$code = isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE ') !== FALSE ? 503 : 500;
+			header("$protocol $code", TRUE, $code);
 		}
 
 		try {
@@ -459,7 +451,6 @@ final class Debugger
 		self::$enabled = FALSE; // un-register shutdown function
 		exit(254);
 	}
-
 
 
 	/**
@@ -528,7 +519,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Handles exception thrown in __toString().
 	 * @param  \Exception
@@ -544,7 +534,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Starts catching potential errors/warnings.
 	 * @return void
@@ -556,7 +545,6 @@ final class Debugger
 		}
 		self::$lastError = NULL;
 	}
-
 
 
 	/**
@@ -575,9 +563,7 @@ final class Debugger
 	}
 
 
-
 	/********************* useful tools ****************d*g**/
-
 
 
 	/**
@@ -633,7 +619,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Starts/stops stopwatch.
 	 * @param  string  name
@@ -647,7 +632,6 @@ final class Debugger
 		$time[$name] = $now;
 		return $delta;
 	}
-
 
 
 	/**
@@ -669,7 +653,6 @@ final class Debugger
 	}
 
 
-
 	/**
 	 * Sends message to FireLogger console.
 	 * @param  mixed   message to log
@@ -683,13 +666,11 @@ final class Debugger
 	}
 
 
-
 	private static function isHtmlMode()
 	{
 		return !self::$ajaxDetected && !self::$consoleMode
 			&& !preg_match('#^Content-Type: (?!text/html)#im', implode("\n", headers_list()));
 	}
-
 
 
 	/** @deprecated */

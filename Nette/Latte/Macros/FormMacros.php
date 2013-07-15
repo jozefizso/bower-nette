@@ -20,7 +20,6 @@ use Nette,
 	Nette\Utils\Strings;
 
 
-
 /**
  * Macros for Nette\Forms.
  *
@@ -41,10 +40,10 @@ class FormMacros extends MacroSet
 			'Nette\Latte\Macros\FormMacros::renderFormBegin($form = $_form = (is_object(%node.word) ? %node.word : $_control[%node.word]), %node.array)',
 			'Nette\Latte\Macros\FormMacros::renderFormEnd($_form)');
 		$me->addMacro('label', array($me, 'macroLabel'), '?></label><?php');
-		$me->addMacro('input', '$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%node.array)', NULL, array($me, 'macroAttrInput'));
+		$me->addMacro('input', '$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%node.array)', NULL, array($me, 'macroAttrName'));
 		$me->addMacro('formContainer', '$_formStack[] = $_form; $formContainer = $_form = (is_object(%node.word) ? %node.word : $_form[%node.word])', '$_form = array_pop($_formStack)');
+		$me->addMacro('name', NULL, NULL, array($me, 'macroAttrName'));
 	}
-
 
 
 	/********************* macros ****************d*g**/
@@ -65,11 +64,10 @@ class FormMacros extends MacroSet
 	}
 
 
-
 	/**
-	 * n:input
+	 * <input n:name> or alias n:input
 	 */
-	public function macroAttrInput(MacroNode $node, PhpWriter $writer)
+	public function macroAttrName(MacroNode $node, PhpWriter $writer)
 	{
 		if ($node->htmlNode->attrs) {
 			$reset = array_fill_keys(array_keys($node->htmlNode->attrs), NULL);
@@ -79,9 +77,7 @@ class FormMacros extends MacroSet
 	}
 
 
-
 	/********************* run-time writers ****************d*g**/
-
 
 
 	/**
@@ -101,7 +97,6 @@ class FormMacros extends MacroSet
 		}
 		echo $el->addAttributes($attrs)->startTag();
 	}
-
 
 
 	/**

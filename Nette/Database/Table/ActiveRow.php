@@ -15,7 +15,6 @@ use Nette,
 	Nette\Database\Reflection\MissingReferenceException;
 
 
-
 /**
  * Single row representation.
  * ActiveRow is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
@@ -37,13 +36,11 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	private $modified = array();
 
 
-
 	public function __construct(array $data, Selection $table)
 	{
 		$this->data = $data;
 		$this->table = $table;
 	}
-
 
 
 	/**
@@ -56,7 +53,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/**
 	 * @internal
 	 * @ignore
@@ -65,7 +61,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	{
 		return $this->table;
 	}
-
 
 
 	public function __toString()
@@ -78,7 +73,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/**
 	 * @return array
 	 */
@@ -89,7 +83,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/**
 	 * Returns primary key value.
 	 * @param  bool
@@ -97,8 +90,11 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function getPrimary($need = TRUE)
 	{
-		$primary = $this->table->getPrimary();
-		if (!is_array($primary)) {
+		$primary = $this->table->getPrimary($need);
+		if ($primary === NULL) {
+			return NULL;
+
+		} elseif (!is_array($primary)) {
 			if (isset($this->data[$primary])) {
 				return $this->data[$primary];
 			} elseif ($need) {
@@ -106,6 +102,7 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 			} else {
 				return NULL;
 			}
+
 		} else {
 			$primaryVal = array();
 			foreach ($primary as $key) {
@@ -123,7 +120,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/**
 	 * Returns row signature (composition of primary keys)
 	 * @param  bool
@@ -133,7 +129,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	{
 		return implode('|', (array) $this->getPrimary($need));
 	}
-
 
 
 	/**
@@ -150,7 +145,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 
 		return $this->getReference($key, $throughColumn);
 	}
-
 
 
 	/**
@@ -171,7 +165,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/**
 	 * Updates row.
 	 * @param  array or NULL for all modified values
@@ -179,6 +172,9 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function update($data = NULL)
 	{
+		if ($data instanceof \Traversable) {
+			$data = iterator_to_array($data);
+		}
 		if ($data === NULL) {
 			$data = $this->modified;
 		}
@@ -187,7 +183,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 			->wherePrimary($this->getPrimary())
 			->update($data);
 	}
-
 
 
 	/**
@@ -209,9 +204,7 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/********************* interface IteratorAggregate ****************d*g**/
-
 
 
 	public function getIterator()
@@ -221,9 +214,7 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/********************* interface ArrayAccess & magic accessors ****************d*g**/
-
 
 
 	/**
@@ -238,7 +229,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/**
 	 * Returns value of column.
 	 * @param  string column name
@@ -248,7 +238,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	{
 		return $this->__get($key);
 	}
-
 
 
 	/**
@@ -262,7 +251,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	/**
 	 * Removes column from data.
 	 * @param  string column name
@@ -274,13 +262,11 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	public function __set($key, $value)
 	{
 		$this->data[$key] = $value;
 		$this->modified[$key] = $value;
 	}
-
 
 
 	public function &__get($key)
@@ -304,7 +290,6 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	public function __isset($key)
 	{
 		$this->accessColumn($key);
@@ -316,13 +301,11 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	public function __unset($key)
 	{
 		unset($this->data[$key]);
 		unset($this->modified[$key]);
 	}
-
 
 
 	protected function accessColumn($key, $selectColumn = TRUE)
@@ -339,12 +322,10 @@ class ActiveRow extends Nette\Object implements \IteratorAggregate, \ArrayAccess
 	}
 
 
-
 	protected function removeAccessColumn($key)
 	{
 		$this->table->removeAccessColumn($key);
 	}
-
 
 
 	protected function getReference($table, $column)

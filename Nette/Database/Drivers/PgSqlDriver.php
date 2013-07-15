@@ -14,7 +14,6 @@ namespace Nette\Database\Drivers;
 use Nette;
 
 
-
 /**
  * Supplemental PostgreSQL database driver.
  *
@@ -26,16 +25,13 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	private $connection;
 
 
-
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
 	}
 
 
-
 	/********************* SQL ****************d*g**/
-
 
 
 	/**
@@ -48,7 +44,6 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	}
 
 
-
 	/**
 	 * Formats boolean for use in a SQL statement.
 	 */
@@ -58,7 +53,6 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	}
 
 
-
 	/**
 	 * Formats date-time for use in a SQL statement.
 	 */
@@ -66,7 +60,6 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	{
 		return $value->format("'Y-m-d H:i:s'");
 	}
-
 
 
 	/**
@@ -79,11 +72,10 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	}
 
 
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(& $sql, $limit, $offset)
 	{
 		if ($limit >= 0) {
 			$sql .= ' LIMIT ' . (int) $limit;
@@ -92,7 +84,6 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 			$sql .= ' OFFSET ' . (int) $offset;
 		}
 	}
-
 
 
 	/**
@@ -104,9 +95,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	}
 
 
-
 	/********************* reflection ****************d*g**/
-
 
 
 	/**
@@ -133,7 +122,6 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 
 		return $tables;
 	}
-
 
 
 	/**
@@ -181,7 +169,6 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	}
 
 
-
 	/**
 	 * Returns metadata for all indexes in a table.
 	 */
@@ -215,7 +202,6 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	}
 
 
-
 	/**
 	 * Returns metadata for all foreign keys in a table.
 	 */
@@ -241,7 +227,6 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 				AND cl.relname = {$this->connection->quote($table)}
 		")->fetchAll();
 	}
-
 
 
 	/**

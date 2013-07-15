@@ -14,7 +14,6 @@ namespace Nette\Application;
 use Nette;
 
 
-
 /**
  * Presenter request. Immutable object.
  *
@@ -56,7 +55,6 @@ final class Request extends Nette\FreezableObject
 	private $files;
 
 
-
 	/**
 	 * @param  string  fully qualified presenter name (module:module:presenter)
 	 * @param  string  method
@@ -76,11 +74,10 @@ final class Request extends Nette\FreezableObject
 	}
 
 
-
 	/**
 	 * Sets the presenter name.
 	 * @param  string
-	 * @return Request  provides a fluent interface
+	 * @return self
 	 */
 	public function setPresenterName($name)
 	{
@@ -88,7 +85,6 @@ final class Request extends Nette\FreezableObject
 		$this->name = $name;
 		return $this;
 	}
-
 
 
 	/**
@@ -101,10 +97,9 @@ final class Request extends Nette\FreezableObject
 	}
 
 
-
 	/**
 	 * Sets variables provided to the presenter.
-	 * @return Request  provides a fluent interface
+	 * @return self
 	 */
 	public function setParameters(array $params)
 	{
@@ -112,7 +107,6 @@ final class Request extends Nette\FreezableObject
 		$this->params = $params;
 		return $this;
 	}
-
 
 
 	/**
@@ -125,14 +119,12 @@ final class Request extends Nette\FreezableObject
 	}
 
 
-
 	/** @deprecated */
 	function setParams(array $params)
 	{
 		trigger_error(__METHOD__ . '() is deprecated; use setParameters() instead.', E_USER_WARNING);
 		return $this->setParameters($params);
 	}
-
 
 
 	/** @deprecated */
@@ -143,10 +135,9 @@ final class Request extends Nette\FreezableObject
 	}
 
 
-
 	/**
 	 * Sets variables provided to the presenter via POST.
-	 * @return Request  provides a fluent interface
+	 * @return self
 	 */
 	public function setPost(array $params)
 	{
@@ -154,7 +145,6 @@ final class Request extends Nette\FreezableObject
 		$this->post = $params;
 		return $this;
 	}
-
 
 
 	/**
@@ -167,10 +157,9 @@ final class Request extends Nette\FreezableObject
 	}
 
 
-
 	/**
 	 * Sets all uploaded files.
-	 * @return Request  provides a fluent interface
+	 * @return self
 	 */
 	public function setFiles(array $files)
 	{
@@ -178,7 +167,6 @@ final class Request extends Nette\FreezableObject
 		$this->files = $files;
 		return $this;
 	}
-
 
 
 	/**
@@ -191,18 +179,16 @@ final class Request extends Nette\FreezableObject
 	}
 
 
-
 	/**
 	 * Sets the method.
 	 * @param  string
-	 * @return Request  provides a fluent interface
+	 * @return self
 	 */
 	public function setMethod($method)
 	{
 		$this->method = $method;
 		return $this;
 	}
-
 
 
 	/**
@@ -213,7 +199,6 @@ final class Request extends Nette\FreezableObject
 	{
 		return $this->method;
 	}
-
 
 
 	/**
@@ -227,7 +212,6 @@ final class Request extends Nette\FreezableObject
 	}
 
 
-
 	/**
 	 * Checks if the method is POST.
 	 * @return bool
@@ -238,12 +222,11 @@ final class Request extends Nette\FreezableObject
 	}
 
 
-
 	/**
 	 * Sets the flag.
 	 * @param  string
 	 * @param  bool
-	 * @return Request  provides a fluent interface
+	 * @return self
 	 */
 	public function setFlag($flag, $value = TRUE)
 	{
@@ -251,7 +234,6 @@ final class Request extends Nette\FreezableObject
 		$this->flags[$flag] = (bool) $value;
 		return $this;
 	}
-
 
 
 	/**

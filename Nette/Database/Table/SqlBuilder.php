@@ -14,8 +14,8 @@ namespace Nette\Database\Table;
 use Nette,
 	Nette\Database\Connection,
 	Nette\Database\IReflection,
-	Nette\Database\ISupplementalDriver;
-
+	Nette\Database\ISupplementalDriver,
+	Nette\Database\SqlLiteral;
 
 
 /**
@@ -70,7 +70,6 @@ class SqlBuilder extends Nette\Object
 	protected $having = '';
 
 
-
 	public function __construct($tableName, Connection $connection, IReflection $reflection)
 	{
 		$this->tableName = $tableName;
@@ -81,12 +80,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	public function buildInsertQuery()
 	{
 		return "INSERT INTO {$this->delimitedTable}";
 	}
-
 
 
 	public function buildUpdateQuery()
@@ -95,12 +92,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	public function buildDeleteQuery()
 	{
 		return "DELETE{$this->buildTopClause()} FROM {$this->delimitedTable}" . $this->buildConditions();
 	}
-
 
 
 	public function importConditions(SqlBuilder $builder)
@@ -111,23 +106,22 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	/********************* SQL selectors ****************d*g**/
-
 
 
 	public function addSelect($columns)
 	{
+		if (is_array($columns)) {
+			throw new Nette\InvalidArgumentException('Select column must be a string.');
+		}
 		$this->select[] = $columns;
 	}
-
 
 
 	public function getSelect()
 	{
 		return $this->select;
 	}
-
 
 
 	public function addWhere($condition, $parameters = array())
@@ -142,44 +136,90 @@ class SqlBuilder extends Nette\Object
 		$condition = $this->removeExtraTables($condition);
 		$condition = $this->tryDelimite($condition);
 
-		if (count($args) !== 2 || strpbrk($condition, '?:')) { // where('column < ? OR column > ?', array(1, 2))
-			if (count($args) !== 2 || !is_array($parameters)) { // where('column < ? OR column > ?', 1, 2)
-				$parameters = $args;
-				array_shift($parameters);
-			}
+		$placeholderCount = substr_count($condition, '?');
+		if ($placeholderCount > 1 && count($args) === 2 && is_array($parameters)) {
+			$args = $parameters;
+		} else {
+			array_shift($args);
+		}
 
-			$this->parameters = array_merge($this->parameters, $parameters);
+		$condition = trim($condition);
+		if ($placeholderCount === 0 && count($args) === 1) {
+			$condition .= ' ?';
+		} elseif ($placeholderCount !== count($args)) {
+			throw new Nette\InvalidArgumentException('Argument count does not match placeholder count.');
+		}
 
-		} elseif ($parameters === NULL) { // where('column', NULL)
-			$condition .= ' IS NULL';
+		$replace = NULL;
+		$placeholderNum = 0;
+		foreach ($args as $arg) {
+			preg_match('#(?:.*?\?.*?){' . $placeholderNum . '}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:ALL|AND|ANY|BETWEEN|EXISTS|IN|LIKE|OR|NOT|SOME))\s*)?\?)#s', $condition, $match, PREG_OFFSET_CAPTURE);
+			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0) ? TRUE : !empty($match[2][0]);
 
-		} elseif ($parameters instanceof Selection) { // where('column', $db->$table())
-			$clone = clone $parameters;
-			if (!$clone->getSqlBuilder()->select) {
-				$clone->select($clone->primary);
-			}
-
-			if ($this->driverName !== 'mysql') {
-				$condition .= ' IN (' . $clone->getSql() . ')';
-			} else {
-				$in = array();
-				foreach ($clone as $row) {
-					$this->parameters[] = array_values(iterator_to_array($row));
-					$in[] = (count($row) === 1 ? '?' : '(?)');
+			if ($arg === NULL) {
+				if ($hasOperator) {
+					throw new Nette\InvalidArgumentException('Column operator does not accept NULL argument.');
 				}
-				$condition .= ' IN (' . ($in ? implode(', ', $in) : 'NULL') . ')';
+				$replace = 'IS NULL';
+			} elseif ($arg instanceof Selection) {
+				$clone = clone $arg;
+				if (!$clone->getSqlBuilder()->select) {
+					try {
+						$clone->select($clone->getPrimary());
+					} catch (\LogicException $e) {
+						throw new Nette\InvalidArgumentException('Selection argument must have defined a select column.', 0, $e);
+					}
+				}
+
+				if ($this->driverName !== 'mysql') {
+					$replace = 'IN (' . $clone->getSql() . ')';
+					$this->parameters = array_merge($this->parameters, $clone->getSqlBuilder()->getParameters());
+				} else {
+					$parameter = array();
+					foreach ($clone as $row) {
+						$parameter[] = array_values(iterator_to_array($row));
+					}
+
+					if (!$parameter) {
+						$replace = 'IN (NULL)';
+					}  else {
+						$replace = 'IN (?)';
+						$this->parameters[] = $parameter;
+					}
+				}
+			} elseif ($arg instanceof SqlLiteral) {
+				$this->parameters[] = $arg;
+			} elseif (is_array($arg)) {
+				if ($hasOperator) {
+					if (trim($match[2][0]) !== 'IN') {
+						throw new Nette\InvalidArgumentException('Column operator does not accept array argument.');
+					}
+				} else {
+					$match[2][0] = 'IN ';
+				}
+
+				if (!$arg) {
+					$replace = $match[2][0] . '(NULL)';
+				} else {
+					$replace = $match[2][0] . '(?)';
+					$this->parameters[] = array_values($arg);
+				}
+			} else {
+				if ($hasOperator) {
+					$replace = $match[2][0] . '?';
+				} else {
+					$replace = '= ?';
+				}
+				$this->parameters[] = $arg;
 			}
 
-		} elseif (!is_array($parameters)) { // where('column', 'x')
-			$condition .= ' = ?';
-			$this->parameters[] = $parameters;
+			if ($replace) {
+				$condition = substr_replace($condition, $replace, $match[1][1], strlen($match[1][0]));
+				$replace = NULL;
+			}
 
-		} else { // where('column', array(1, 2))
-			if ($parameters) {
-				$condition .= " IN (?)";
-				$this->parameters[] = $parameters;
-			} else {
-				$condition .= " IN (NULL)";
+			if ($arg !== NULL) {
+				$placeholderNum++;
 			}
 		}
 
@@ -188,12 +228,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	public function getConditions()
 	{
 		return array_values($this->conditions);
 	}
-
 
 
 	public function addOrder($columns)
@@ -202,12 +240,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	public function getOrder()
 	{
 		return $this->order;
 	}
-
 
 
 	public function setLimit($limit, $offset)
@@ -217,19 +253,16 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	public function getLimit()
 	{
 		return $this->limit;
 	}
 
 
-
 	public function getOffset()
 	{
 		return $this->offset;
 	}
-
 
 
 	public function setGroup($columns, $having)
@@ -239,12 +272,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	public function getGroup()
 	{
 		return $this->group;
 	}
-
 
 
 	public function getHaving()
@@ -253,9 +284,7 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	/********************* SQL building ****************d*g**/
-
 
 
 	/**
@@ -288,12 +317,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	public function getParameters()
 	{
 		return $this->parameters;
 	}
-
 
 
 	protected function buildJoins($val, $inner = FALSE)
@@ -330,7 +357,6 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	protected function buildConditions()
 	{
 		$return = '';
@@ -360,7 +386,6 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	protected function buildTopClause()
 	{
 		if ($this->limit !== NULL && $this->driverName === 'dblib') {
@@ -370,7 +395,6 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-
 	protected function tryDelimite($s)
 	{
 		$driver = $this->driver;
@@ -378,7 +402,6 @@ class SqlBuilder extends Nette\Object
 			return strtoupper($m[0]) === $m[0] ? $m[0] : $driver->delimite($m[0]);
 		}, $s);
 	}
-
 
 
 	protected function removeExtraTables($expression)

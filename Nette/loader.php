@@ -1,14 +1,13 @@
 <?php
 
 /**
- * Nette Framework (version 2.0.10 released on 2013-03-08, http://nette.org)
+ * Nette Framework (version 2.0.11 released on 2013-07-11, http://nette.org)
  *
  * Copyright (c) 2004, 2013 David Grudl (http://davidgrudl.com)
  *
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
@@ -23,15 +22,13 @@ umask(0);
 @header('Content-Type: text/html; charset=utf-8'); // @ - headers may be sent
 
 
-
 /**
  * Load and configure Nette Framework.
  */
 define('NETTE', TRUE);
 define('NETTE_DIR', __DIR__);
-define('NETTE_VERSION_ID', 20010); // v2.0.10
+define('NETTE_VERSION_ID', 20011); // v2.0.11
 define('NETTE_PACKAGE', '5.3');
-
 
 
 require_once __DIR__ . '/common/exceptions.php';
@@ -50,6 +47,7 @@ Nette\Diagnostics\Debugger::_init();
 
 Nette\Utils\SafeStream::register();
 
+class_alias('Nette\Config\Configurator', 'Nette\Configurator');
 
 
 /**

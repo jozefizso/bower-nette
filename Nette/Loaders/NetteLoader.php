@@ -14,7 +14,6 @@ namespace Nette\Loaders;
 use Nette;
 
 
-
 /**
  * Nette auto loader is responsible for loading Nette classes and interfaces.
  *
@@ -27,7 +26,6 @@ class NetteLoader extends AutoLoader
 
 	/** @var array */
 	public $renamed = array(
-		'Nette\Configurator' => 'Nette\Config\Configurator',
 		'Nette\Http\User' => 'Nette\Security\User',
 		'Nette\Templating\DefaultHelpers' => 'Nette\Templating\Helpers',
 		'Nette\Latte\ParseException' => 'Nette\Latte\CompileException',
@@ -82,7 +80,6 @@ class NetteLoader extends AutoLoader
 	);
 
 
-
 	/**
 	 * Returns singleton instance with lazy instantiation.
 	 * @return NetteLoader
@@ -94,7 +91,6 @@ class NetteLoader extends AutoLoader
 		}
 		return self::$instance;
 	}
-
 
 
 	/**

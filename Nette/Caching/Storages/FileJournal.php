@@ -15,7 +15,6 @@ use Nette,
 	Nette\Caching\Cache;
 
 
-
 /**
  * Btree+ based file journal.
  *
@@ -113,7 +112,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * @return void
 	 */
@@ -126,7 +124,6 @@ class FileJournal extends Nette\Object implements IJournal
 			$this->handle = FALSE;
 		}
 	}
-
 
 
 	/**
@@ -237,7 +234,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Cleans entries from journal.
 	 * @param  array
@@ -280,14 +276,13 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Cleans entries from journal by tags.
 	 * @param  array
 	 * @param  array
 	 * @return array of removed items
 	 */
-	private function cleanTags(array $tags, array &$toDelete)
+	private function cleanTags(array $tags, array & $toDelete)
 	{
 		$entries = array();
 
@@ -304,14 +299,13 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Cleans entries from journal by priority.
 	 * @param  integer
 	 * @param  array
 	 * @return array of removed items
 	 */
-	private function cleanPriority($priority, array &$toDelete)
+	private function cleanPriority($priority, array & $toDelete)
 	{
 		list($nodeId, $node) = $this->findIndexNode(self::PRIORITY, $priority);
 
@@ -353,14 +347,13 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Cleans links from $data.
 	 * @param  array
 	 * @param  array
 	 * @return array of removed items
 	 */
-	private function cleanLinks(array $data, array &$toDelete)
+	private function cleanLinks(array $data, array & $toDelete)
 	{
 		$return = array();
 
@@ -401,7 +394,7 @@ class FileJournal extends Nette\Object implements IJournal
 					continue;
 				}
 
-				$nodeLink = &$node[$link];
+				$nodeLink = & $node[$link];
 				if (!$nodeLink[self::DELETED]) {
 					$nodeLink[self::DELETED] = TRUE;
 					$return[] = $nodeLink[self::KEY];
@@ -423,7 +416,6 @@ class FileJournal extends Nette\Object implements IJournal
 
 		return $return;
 	}
-
 
 
 	/**
@@ -474,7 +466,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Merge data with index data in other nodes.
 	 * @param  array
@@ -501,7 +492,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Cleans links from other nodes.
 	 * @param  int
@@ -509,7 +499,7 @@ class FileJournal extends Nette\Object implements IJournal
 	 * @param  array
 	 * @return void
 	 */
-	private function cleanIndexData($nextNodeId, array $links, &$masterNodeLink)
+	private function cleanIndexData($nextNodeId, array $links, & $masterNodeLink)
 	{
 		$prev = -1;
 
@@ -572,7 +562,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Get node from journal.
 	 * @param  integer
@@ -617,7 +606,6 @@ class FileJournal extends Nette\Object implements IJournal
 		// Save to cache and return
 		return $this->nodeCache[$id] = $node;
 	}
-
 
 
 	/**
@@ -699,7 +687,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Commit all changed nodes from cache to journal file.
 	 * @return void
@@ -719,7 +706,6 @@ class FileJournal extends Nette\Object implements IJournal
 		}
 		$this->toCommit = array();
 	}
-
 
 
 	/**
@@ -766,7 +752,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Commit node string to journal file.
 	 * @param  integer
@@ -781,7 +766,6 @@ class FileJournal extends Nette\Object implements IJournal
 			throw new Nette\InvalidStateException("Cannot write node number $id to journal.");
 		}
 	}
-
 
 
 	/**
@@ -836,7 +820,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Find complete free node.
 	 * @param  integer
@@ -875,7 +858,6 @@ class FileJournal extends Nette\Object implements IJournal
 			return $nodesId;
 		}
 	}
-
 
 
 	/**
@@ -922,7 +904,6 @@ class FileJournal extends Nette\Object implements IJournal
 			++$id;
 		}
 	}
-
 
 
 	/**
@@ -1031,7 +1012,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Commit header to journal file.
 	 * @return void
@@ -1041,7 +1021,6 @@ class FileJournal extends Nette\Object implements IJournal
 		fseek($this->handle, self::INT32_SIZE);
 		@fwrite($this->handle, pack('N', $this->lastNode));  // intentionally @, save is not necessary
 	}
-
 
 
 	/**
@@ -1074,7 +1053,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Complete delete all nodes from file.
 	 * @throws \Nette\InvalidStateException
@@ -1085,7 +1063,6 @@ class FileJournal extends Nette\Object implements IJournal
 			throw new Nette\InvalidStateException('Cannot truncate journal file.');
 		}
 	}
-
 
 
 	/**
@@ -1111,7 +1088,6 @@ class FileJournal extends Nette\Object implements IJournal
 			fwrite($this->handle, $this->processIdentifier);
 		}
 	}
-
 
 
 	/**
@@ -1163,7 +1139,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Unlock file and save last modified time.
 	 * @return void
@@ -1177,16 +1152,15 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * @param  int $nodeId
 	 * @param  array $nodeData
 	 * @return int
 	 * @throws \Nette\InvalidStateException
 	 */
-	private function findNextFreeKey($nodeId, array &$nodeData)
+	private function findNextFreeKey($nodeId, array & $nodeData)
 	{
-	  $newKey = $nodeData[self::INFO][self::LAST_INDEX] + 1;
+		$newKey = $nodeData[self::INFO][self::LAST_INDEX] + 1;
 		$maxKey = ($nodeId + 1) << self::BITROT;
 
 		if ($newKey >= $maxKey) {
@@ -1203,7 +1177,6 @@ class FileJournal extends Nette\Object implements IJournal
 	}
 
 
-
 	/**
 	 * Append $append to $array.
 	 * This function is much faster then $array = array_merge($array, $append)
@@ -1211,13 +1184,12 @@ class FileJournal extends Nette\Object implements IJournal
 	 * @param  array
 	 * @return void
 	 */
-	private function arrayAppend(array &$array, array $append)
+	private function arrayAppend(array & $array, array $append)
 	{
 		foreach ($append as $value) {
 			$array[] = $value;
 		}
 	}
-
 
 
 	/**
@@ -1227,7 +1199,7 @@ class FileJournal extends Nette\Object implements IJournal
 	 * @param  array
 	 * @return void
 	 */
-	private function arrayAppendKeys(array &$array, array $append)
+	private function arrayAppendKeys(array & $array, array $append)
 	{
 		foreach ($append as $key => $value) {
 			$array[$key] = $value;

@@ -19,7 +19,6 @@ use Nette,
 	Nette\Utils\PhpGenerator\PhpLiteral;
 
 
-
 /**
  * Basic container builder.
  *
@@ -45,7 +44,6 @@ class ContainerBuilder extends Nette\Object
 	private $dependencies = array();
 
 
-
 	/**
 	 * Adds new service definition. The expressions %param% and @service will be expanded.
 	 * @param  string
@@ -63,7 +61,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Removes the specified service definition.
 	 * @param  string
@@ -73,7 +70,6 @@ class ContainerBuilder extends Nette\Object
 	{
 		unset($this->definitions[$name]);
 	}
-
 
 
 	/**
@@ -90,7 +86,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Gets all service definitions.
 	 * @return array
@@ -99,7 +94,6 @@ class ContainerBuilder extends Nette\Object
 	{
 		return $this->definitions;
 	}
-
 
 
 	/**
@@ -113,9 +107,7 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/********************* class resolving ****************d*g**/
-
 
 
 	/**
@@ -139,7 +131,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Gets the service objects of the specified tag.
 	 * @param  string
@@ -155,7 +146,6 @@ class ContainerBuilder extends Nette\Object
 		}
 		return $found;
 	}
-
 
 
 	/**
@@ -179,7 +169,6 @@ class ContainerBuilder extends Nette\Object
 		$this->addDependency($rm->getFileName());
 		return Helpers::autowireArguments($rm, $arguments, $this);
 	}
-
 
 
 	/**
@@ -249,7 +238,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	private function resolveClass($name, $recursive = array())
 	{
 		if (isset($recursive[$name])) {
@@ -279,11 +267,12 @@ class ContainerBuilder extends Nette\Object
 			}
 			try {
 				$reflection = $factory->toReflection();
-				$def->class = preg_replace('#[|\s].*#', '', $reflection->getAnnotation('return'));
-				if ($def->class && !class_exists($def->class) && $def->class[0] !== '\\' && $reflection instanceof \ReflectionMethod) {
-					$def->class = $reflection->getDeclaringClass()->getNamespaceName() . '\\' . $def->class;
-				}
 			} catch (\ReflectionException $e) {
+				throw new Nette\InvalidStateException("Missing factory '$factory'.");
+			}
+			$def->class = preg_replace('#[|\s].*#', '', $reflection->getAnnotation('return'));
+			if ($def->class && !class_exists($def->class) && $def->class[0] !== '\\' && $reflection instanceof \ReflectionMethod) {
+				$def->class = $reflection->getDeclaringClass()->getNamespaceName() . '\\' . $def->class;
 			}
 
 		} elseif ($service = $this->getServiceName($factory)) { // alias or factory
@@ -302,17 +291,15 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Adds a file to the list of dependencies.
-	 * @return ContainerBuilder  provides a fluent interface
+	 * @return self
 	 */
 	public function addDependency($file)
 	{
 		$this->dependencies[$file] = TRUE;
 		return $this;
 	}
-
 
 
 	/**
@@ -326,9 +313,7 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/********************* code generator ****************d*g**/
-
 
 
 	/**
@@ -400,7 +385,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Generates body of service method.
 	 * @return string
@@ -434,7 +418,6 @@ class ContainerBuilder extends Nette\Object
 
 		return $code .= 'return $service;';
 	}
-
 
 
 	/**
@@ -504,7 +487,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Formats PHP statement.
 	 * @return string
@@ -512,7 +494,7 @@ class ContainerBuilder extends Nette\Object
 	public function formatPhp($statement, $args, $self = NULL)
 	{
 		$that = $this;
-		array_walk_recursive($args, function(&$val) use ($self, $that) {
+		array_walk_recursive($args, function(& $val) use ($self, $that) {
 			list($val) = $that->normalizeEntity(array($val));
 
 			if ($val instanceof Statement) {
@@ -530,7 +512,6 @@ class ContainerBuilder extends Nette\Object
 	}
 
 
-
 	/**
 	 * Expands %placeholders% in strings (recursive).
 	 * @return mixed
@@ -539,7 +520,6 @@ class ContainerBuilder extends Nette\Object
 	{
 		return Helpers::expand($value, $this->parameters, TRUE);
 	}
-
 
 
 	/** @internal */
@@ -562,7 +542,6 @@ class ContainerBuilder extends Nette\Object
 		}
 		return $entity; // Class, @service, [Class, member], [@service, member], [, globalFunc]
 	}
-
 
 
 	/**
